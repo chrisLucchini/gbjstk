@@ -342,84 +342,6 @@ var gb = (function() {
 
 	/************* GoodBarber Plugin API Functions *************/
 
-	/************* [GB Plugin API] Basic Methods *************/
-
-	/* Function : mail
-	*  Launches the mail Composer.
-	*  @param to The destination address
-	*  @param subject (optional) The mail subject
-	*  @param body The (optional) mail content 
-	*/
-	function mail ( to, subject, body )
-	{
-		to = to || "";
-		subject = subject || "";
-		body = body || "";
-		gbGetRequest ( "mailto:" + to, { "subject":encodeURIComponent(subject), "body":encodeURIComponent(body) } );
-	}
-
-	/* Function : maps
-	*  Launches the Maps native application.
-	*  @param params The parameters to pass in the query string 
-	*/
-	function maps ( params )
-	{
-		params = params || {};
-		if ( gbIsEmpty ( params ) )
-			gbGetRequest ( "goodbarber://maps?q=" );
-		else
-			gbGetRequest ( "goodbarber://maps", params );
-	}
-
-	/* Function : open
-	*  Opens the url in a new window of the browser
-	*  @param url The url to open
-	*/
-	function open ( url )
-	{
-		var params = { "url": encodeURIComponent(url) };
-		gbGetRequest ( "goodbarber://openExternal", params);
-	}
-
-	/* Function : openSection
-	*  Opens the section identified by its "id".
-	*  @param id The id of the destination section
-	*/
-	function openSection ( id )
-	{
-		gbGetRequest ( "goodbarber://gotosection", { "id":id } );
-	}	
-
-	/************* [GB Plugin API] Navigation Methods *************/
-
-	/* Function : navigatePush
-	*  Launch a push navigation between two pages of the plugin.
-	*  @param page The destination page
-	*  @param postParams The postParams to give to the destination page
-	*/
-	function navigatePush ( page, postParams )
-	{
-		gbPostRequest ( "goodbarber://navigate.push", { "page":page }, postParams );
-	}
-
-	/* Function : navigateModal
-	*  Launch a modal navigation between two pages of the plugin.
-	*  @param page The destination page
-	*  @param postParams The postParams to give to the destination page
-	*/
-	function navigateModal ( page, postParams )
-	{
-		gbPostRequest ( "goodbarber://navigate.modal", { "page":page }, postParams );
-	}
-
-	/* Function : navigateBack
-	*  Launch a back navigation between two pages of the plugin.
-	*/
-	function navigateBack ()
-	{
-		gbGetRequest ( "goodbarber://navigate.back" );
-	}
-
 	/************* [GB Plugin API] HTTP Request Methods *************/
 
 	/* Function : get
@@ -610,21 +532,45 @@ var gb = (function() {
 		alert("test");
 	}
 
-	var context = {
-		url: test
+	/************* [GB Plugin API] Navigation Methods *************/
+
+	/* Function: href
+	* Returns the url of the current plugin page
+	*/
+	function href ()
+	{
+		return _GET["href"];
+	}
+
+	/* Function: arguments
+	* Returns the parameters passed throught the url of the page
+	*/
+	function params ()
+	{
+		return _GET["params"];
+	}
+
+	/* Function : open
+	*  Opens the url in a new window of the browser
+	*  @param url The url to open
+	*/
+	function open ( url )
+	{
+		var params = { "url": encodeURIComponent(url) };
+		gbGetRequest ( "goodbarber://openExternal", params);
+	}
+
+	var navigation = {
+		href: href,
+		params: params,
+		open: open
 	};
 
     // public members, exposed with return statement
     return {
     	init: init,
     	version: version,
-    	mail: mail,
-    	maps: maps,
-    	open: open,
-    	openSection: openSection,
-    	navigatePush: navigatePush,
-    	navigateModal: navigateModal,
-    	navigateBack: navigateBack,
+		navigation: navigation,
     	get: get,
     	post: post,
     	share: share,
@@ -637,97 +583,11 @@ var gb = (function() {
     	getUser: getUser,
     	log: log,
     	alert: _alert,
-    	print: print,
-    	context: context
+    	print: print
     };
 })();
 
 /************* GoodBarber Plugin API Functions *************/
-
-/************* [GB Plugin API] Basic Methods *************/
-
-/* Function : gbMailto
-*  Launches the mail Composer.
-*  @param to The destination address
-*  @param subject (optional) The mail subject
-*  @param body The (optional) mail content 
-*/
-/*
-*  	This function is deprecated
-*	You should now use the gb.mail() function
-*/
-function gbMailto ( to, subject, body )
-{
-	return gb.mail ( to, subject, body);
-}
-
-/* Function : gbMaps
-*  Launches the Maps native application.
-*  @param params The parameters to pass in the query string 
-*/
-/*
-*  	This function is deprecated
-*	You should now use the gb.maps() function
-*/
-function gbMaps ( params )
-{
-	return gb.maps ( params );
-}
-
-/* Function : gbGoToSection
-*  Goes to the section identified by its "id".
-*  @param id The id of the destination section
-*/
-/*
-*  	This function is deprecated
-*	You should now use the gb.openSection() function
-*/
-function gbGoToSection ( id )
-{
-	return gb.openSection ( id );
-}
-
-/************* [GB Plugin API] Navigation Methods *************/
-
-/* Function : gbNavigatePush
-*  Launch a push navigation between two pages of the plugin.
-*  @param page The destination page
-*  @param postParams The postParams to give to the destination page
-*/
-/*
-*  	This function is deprecated
-*	You should now use the gb.navigatePush() function
-*/
-function gbNavigatePush ( page, postParams )
-{
-	return gb.navigatePush(page, postParams);
-}
-
-/* Function : gbNavigateModal
-*  Launch a modal navigation between two pages of the plugin.
-*  @param page The destination page
-*  @param postParams The postParams to give to the destination page
-*/
-/*
-*  	This function is deprecated
-*	You should now use the gb.navigateModal() function
-*/
-function gbNavigateModal ( page, postParams )
-{
-	return gb.navigateModal(page, postParams);
-}
-
-/* Function : gbNavigateBack
-*  Launch a back navigation between two pages of the plugin.
-*/
-/*
-*  	This function is deprecated
-*	You should now use the gb.navigateBack() function
-*/
-function gbNavigateBack ()
-{
-	return gb.navigateBack();
-}
 
 /************* [GB Plugin API] HTTP Request Methods *************/
 
