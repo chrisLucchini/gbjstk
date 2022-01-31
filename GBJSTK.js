@@ -539,7 +539,7 @@ var gb = (function() {
 	*/
 	function href ()
 	{
-		return _GET["href"];
+		return _GB["href"];
 	}
 
 	/* Function: arguments
@@ -547,7 +547,7 @@ var gb = (function() {
 	*/
 	function params ()
 	{
-		return _GET["params"];
+		return _GB["params"];
 	}
 
 	/* Function : open
