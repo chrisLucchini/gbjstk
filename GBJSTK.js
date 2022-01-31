@@ -270,6 +270,19 @@ var gb = (function() {
 		}
 	}
 
+	function gbCallbackToString(f) {
+		return btoa(f.toString());
+	}
+
+	function gbCallback(hash, values) {
+    	var decoded = atob(hash);
+    	var fn = new Function('return ' + decoded)(); 
+    	function caller(otherFunction) {
+        	otherFunction.apply(null, values);
+    	}
+    	caller(fn);
+	}
+
 	/************* Website *************/
 
 	/*
@@ -606,12 +619,46 @@ var gb = (function() {
 	    }
 	}
 
-	function test() {
-		alert("test");
+	/*** Location bundle ***/
+
+	function href() {
+		return _GB["href"];
 	}
 
-	var context = {
-		url: test
+	function args() {
+		return _GB["args"];
+	}
+
+	var location = {
+		href: href,
+		arguments: args
+	};
+
+	/*** Storage bundle ***/
+
+	function setItem( key, item ) {
+		var s = JSON.stringify(item);
+		gbPostRequest ( "goodbarber://gbsetstorageitem", { "key": key}, { "item": s} );
+	}
+
+	function getItem( key, callback ) {
+		var s = gbCallbackToString(callback);
+		gbPostRequest ( "goodbarber://gbgetstorageitem", { "key": key}, { "callback": s} );
+	}
+
+	function removeItem( key ) {
+		gbGetRequest ( "goodbarber://gbremovestorageitem", { "key": key });
+	}
+
+	function clear() {
+		gbGetRequest ( "goodbarber://gbclearstorage", { });
+	}
+
+	var storage = {
+		setItem: setItem,
+		getItem: getItem,
+		removeItem: removeItem,
+		clear: clear
 	};
 
     // public members, exposed with return statement
@@ -638,7 +685,8 @@ var gb = (function() {
     	log: log,
     	alert: _alert,
     	print: print,
-    	context: context
+    	location: location,
+    	storage: storage
     };
 })();
 
