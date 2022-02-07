@@ -342,32 +342,6 @@ var gb = (function() {
 
 	/************* GoodBarber Plugin API Functions *************/
 
-	/************* [GB Plugin API] HTTP Request Methods *************/
-
-	/* Function : get
-	*  Starts a GET request to the url resource, using the "method" method, and passing the "postParams" params if method==POST.
-	*  @param resourceUrl The url of the resource to load
-	*  @param tag A tag to identify the request
-	*  @param cache true if you want to use the app's cache mechanism, false otherwise
-	*/
-	function get ( url, tag = 0, cache = false)
-	{
-		return gbSendRequest ( url, tag, cache, "GET", null);
-	}
-
-	/* Function : post
-	*  Starts a POST request to the url resource, using the "method" method, and passing the "postParams" params if method==POST.
-	*  @param resourceUrl The url of the resource to load
-	*  @param params HTTP Post Params in your request
-	*  @param params HTTP Headers in your request
-	*  @param tag A tag to identify the request
-	*  @param cache true if you want to use the app's cache mechanism, false otherwise
-	*/
-	function post ( url, params, headers = {}, tag = 0, cache = false)
-	{
-		return gbSendRequest ( url, tag, cache, "POST", params);
-	}
-
 	/************* [GB Plugin API] Other Methods *************/
 
 	/* Function : share
@@ -451,41 +425,6 @@ var gb = (function() {
 		gbGetRequest ( "goodbarber://gettimezoneoffset" );
 	}
 
-	/* Function : setPreference
-	*  Stores a preference in User Defaults.
-	*  @param key The key to store
-	*  @param valueString The value to store
-	*  @param isGlobal Used to share preference between all plugins of the app. Possible values : 0 or 1.
-	*/
-	function setPreference ( key, valueString, isGlobal="0" )
-	{
-		gbGetRequest ( "goodbarber://setpreference", { "key":key, "value":valueString, "global": isGlobal } );
-	}
-
-	/* Function : getPreference
-	*  Get a preference stored in User Defaults.
-	*  @param key The key to get
-	*  @param isGlobal Used to get a shared preference between all plugins of the app. Possible values : 0 or 1.
-	*/
-	function getPreference ( key, isGlobal="0" )
-	{
-		if ( gbDevMode )
-			gbDidSuccessGetPreference ( key, "" );
-
-		gbGetRequest ( "goodbarber://getpreference", { "key":key, "isGlobal": isGlobal } );
-	}
-
-	/* Function : getUser
-	*  Get the currently connected user. Will call the fail handler gbDidFailGetUser if no user is connected.
-	*/
-	function getUser ()
-	{
-		if ( gbDevMode )
-			gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
-
-		gbGetRequest ( "goodbarber://getuser" );
-	}
-
 	/* Function : log
 	*  Console log a string. Usefull to log in native iOS with NSLogs
 	*/
@@ -528,10 +467,6 @@ var gb = (function() {
 	    }
 	}
 
-	function test() {
-		alert("test");
-	}
-
 	/************* [GB Plugin API] Navigation Methods *************/
 
 	/* Function: href
@@ -560,27 +495,52 @@ var gb = (function() {
 		gbGetRequest ( "goodbarber://openExternal", params);
 	}
 
+	/* Function : mail
+	*  Launches the mail Composer.
+	*  @param to The destination address
+	*  @param subject (optional) The mail subject
+	*  @param body The (optional) mail content 
+	*/
+	function mail ( to, subject, body )
+	{
+		to = to || "";
+		subject = subject || "";
+		body = body || "";
+		gbGetRequest ( "mailto:" + to, { "subject":encodeURIComponent(subject), "body":encodeURIComponent(body) } );
+	}
+
+	/* Function : maps
+	*  Launches the Maps native application.
+	*  @param params The parameters to pass in the query string 
+	*/
+	function maps ( params )
+	{
+		params = params || {};
+		if ( gbIsEmpty ( params ) )
+			gbGetRequest ( "goodbarber://maps?q=" );
+		else
+			gbGetRequest ( "goodbarber://maps", params );
+	}
+
 	var navigation = {
 		href: href,
 		params: params,
-		open: open
+		open: open,
+		mail: mail,
+		maps: maps
 	};
 
     // public members, exposed with return statement
     return {
     	init: init,
+		sendRequest: gbSendRequest,
     	version: version,
 		navigation: navigation,
-    	get: get,
-    	post: post,
     	share: share,
     	getPhoto: getPhoto,
     	getVideo: getVideo,
     	getLocation: getLocation,
     	getTimezoneOffset: getTimezoneOffset,
-    	setPreference: setPreference,
-    	getPreference: getPreference,
-    	getUser: getUser,
     	log: log,
     	alert: _alert,
     	print: print
@@ -601,15 +561,10 @@ var gb = (function() {
 */
 /*
 *  	This function is deprecated
-*	You should now use both gb.get() & gb.post() functions
 */
 function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 {
-	if (requestMethod == "POST") {
-		return gb.post ( resourceUrl, postParams, tag, cache);
-	} else {
-		return gb.get ( resourceUrl, tag, cache);
-	}
+	return gb.sendRequest(resourceUrl, tag, cache, requestMethod, postParams);
 }
 
 /************* [GB Plugin API] Other Methods *************/
@@ -679,11 +634,11 @@ function gbGetTimezoneOffset ()
 */
 /*
 *  	This function is deprecated
-*	You should now use the gb.setPreference() function
 */
 function gbSetPreference ( key, valueString, isGlobal="0" )
 {
-	return gb.setPreference(key, valueString, isGlobal);
+	var url = "goodbarber://setpreference?key="+key+"&value="+valueString+"&global="+isGlobal;
+	return gb.sendRequest(url, 0, false, "GET", {});
 }
 
 /* Function : gbGetPreference
@@ -693,11 +648,15 @@ function gbSetPreference ( key, valueString, isGlobal="0" )
 */
 /*
 *  	This function is deprecated
-*	You should now use the gb.getPreference() function
 */
 function gbGetPreference ( key, isGlobal="0" )
 {
-	return gb.getPreference(key, isGlobal);
+	if ( gbDevMode )
+		gbDidSuccessGetPreference ( key, "" );
+
+	
+	var url = "goodbarber://getpreference?key="+key+"&global="+isGlobal;
+	return gb.sendRequest(url, 0, false, "GET", {});
 }
 
 /* Function : gbGetUser
@@ -705,11 +664,13 @@ function gbGetPreference ( key, isGlobal="0" )
 */
 /*
 *  	This function is deprecated
-*	You should now use the gb.getUser() function
 */
 function gbGetUser ()
 {
-	return gb.getUser();
+	if ( gbDevMode )
+		gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
+	
+	return gb.sendRequest("goodbarber://getuser", 0, false, "GET", {});
 }
 
 /* Function : gbLogs
