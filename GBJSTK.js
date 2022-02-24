@@ -318,6 +318,18 @@ var gb = (function() {
 			}
 		}
 
+		/*  Function : gbWebsiteStoreGBGlobalData
+		* Set a variable with data
+		* @param where The name of the variable
+		* @param what The value of the variable
+		*/
+	   function gbWebsiteStoreGBGlobalData(where, what) {
+		   window['_GB'] = ({
+			   ...(window['_GB'] || {}),
+			   [where]: what
+		   })
+	   }
+
 		// if (event.origin != window.document.origin) {
 		// 	return;
 		// }
@@ -333,6 +345,8 @@ var gb = (function() {
 			gbWebsiteInitPlugin();
 		} else if (gbAngularMode == true && method == 'gbWebsiteSetData') {
 			gbWebsiteSetData(params[0], params[1]);
+		} else if (method == 'gbWebsiteStoreGBGlobalData') {
+			gbWebsiteStoreGBGlobalData(params[0], params[1]);
 		} else if (gbAngularMode == true) {
 			// The method is a callback
 			gbWebsiteCallback(method, params);
