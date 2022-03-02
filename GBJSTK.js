@@ -153,74 +153,19 @@ var gb = (function() {
 	*  @param path The action of the form
 	*  @param params The params to send in the request body 
 	*/
-	function gbPostRequest ( path, getParams, postParams )
+	function gbPostRequest(path, getParams, postParams) 
 	{
-	    var shouldRemovePost = false;
-	    if (gbPlatformIsIos() && path.startsWith("goodbarber://") && postParams) {
-	        shouldRemovePost = true;
-	    }
-	    
-		// As WKWebview doesn't allow anymore access to httpBody, we add as get parameter an id to the request
-		if (shouldRemovePost) {
-			var date = new Date();
-			var timestamp = date.getTime();
-			if (!getParams) {
-				getParams = {}
-			}
-
-			getParams['gbid'] = timestamp;
-		}
-
 		var formAction = path;
-		if ( !gbIsEmpty ( getParams ) )
-			formAction += "?" + gbConstructQueryString ( getParams ); 
+		if (!gbIsEmpty(getParams))
+			formAction += "?" + gbConstructQueryString(getParams);
 
 		if (gbAngularMode) {
-			window.parent.postMessage({url: formAction, params: postParams}, '*');
-		} else {
-			var form = document.createElement ( "form" );
-			form.setAttribute ( "method", "post" );
-			form.setAttribute ( "action", formAction );
-			for ( var key in postParams )
-			{
-				if ( postParams.hasOwnProperty ( key ) )
-				{
-					var hiddenField = document.createElement ( "input" );
-					hiddenField.setAttribute ( "type", "hidden" );
-					hiddenField.setAttribute ( "name", key );
-					hiddenField.setAttribute ( "value", postParams[key] );
-					form.appendChild ( hiddenField );
-				}
-			}
-			document.body.appendChild ( form );
-
-			if (gbPlatformIsAndroid())
-			{
-				Android.post (formAction, JSON.stringify(postParams));
-			}
-			else 
-			{
-				if (shouldRemovePost)
-				{
-					// As WKWebview doesn't allow anymore access to httpBody, we add post params to the dom as hidden
-					var postElement = document.createElement('div');
-					postElement.setAttribute("class", "gbdata");
-					postElement.setAttribute("style", "display: none !important");
-					postElement.setAttribute("id", getParams['gbid']);
-					var postParamsString = "";
-					var i=0;
-					for (var key in postParams) {
-						if (i>0) {
-						    postParamsString += "&";
-						}
-						postParamsString += key + "=" + postParams[key];
-						i++;
-					}
-					postElement.innerHTML = postParamsString;
-		            document.body.appendChild(postElement);
-				}
-				form.submit ();
-			}
+			window.parent.postMessage({ url: formAction, params: postParams }, '*');
+		} else if (gbPlatformIsIos()) {
+			const message = JSON.stringify({ url: formAction, params: postParams })
+			window.webkit.messageHandlers.gbObserver.postMessage(message);
+		} else if (gbPlatformIsAndroid()) {
+			Android.post(formAction, JSON.stringify(postParams));
 		}
 	}
 
@@ -462,6 +407,41 @@ var gb = (function() {
 		gbGetRequest ( "goodbarber://gettimezoneoffset" );
 	}
 
+	/* Function : setPreference
+	*  Stores a preference in User Defaults.
+	*  @param key The key to store
+	*  @param valueString The value to store
+	*  @param isGlobal Used to share preference between all plugins of the app. Possible values : 0 or 1.
+	*/
+	function setPreference ( key, valueString, isGlobal="0" )
+	{
+		gbGetRequest ( "goodbarber://setpreference", { "key":key, "value":valueString, "global": isGlobal } );
+	}
+
+	/* Function : getPreference
+	*  Get a preference stored in User Defaults.
+	*  @param key The key to get
+	*  @param isGlobal Used to get a shared preference between all plugins of the app. Possible values : 0 or 1.
+	*/
+	function getPreference ( key, isGlobal="0" )
+	{
+		if ( gbDevMode )
+			gbDidSuccessGetPreference ( key, "" );
+
+		gbGetRequest ( "goodbarber://getpreference", { "key":key, "isGlobal": isGlobal } );
+	}
+
+	/* Function : getUser
+	*  Get the currently connected user. Will call the fail handler gbDidFailGetUser if no user is connected.
+	*/
+	function getUser ()
+	{
+		if ( gbDevMode )
+			gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
+
+		gbGetRequest ( "goodbarber://getuser" );
+	}
+
 	/* Function : log
 	*  Console log a string. Usefull to log in native iOS with NSLogs
 	*/
@@ -567,6 +547,38 @@ var gb = (function() {
 		maps: maps
 	};
 
+    /************* [GB Plugin API] Storage Methods *************/
+
+	function setItem(key, item) {
+		var s = JSON.stringify(item);
+		gbPostRequest("goodbarber://gbsetstorageitem", { "key": key }, { "item": s });
+	}
+
+	function getItem(key, callback) {
+		var s = gbCallbackToString(callback);
+		gbPostRequest("goodbarber://gbgetstorageitem", { "key": key }, { "callback": s });
+	}
+
+	function removeItem(key) {
+		gbPostRequest("goodbarber://gbremovestorageitem", { "key": key });
+	}
+
+	function clear() {
+		gbPostRequest("goodbarber://gbclearstorage", {});
+	}
+
+	function keys(callback) {
+		var s = gbCallbackToString(callback);
+		gbPostRequest("goodbarber://gbgetstoragekeys", {}, { "callback": s });
+	}
+
+    var storage = {
+		setItem: setItem,
+		getItem: getItem,
+		removeItem: removeItem,
+		clear: clear,
+        keys: keys
+	};
 
     // public members, exposed with return statement
     return {
@@ -574,11 +586,15 @@ var gb = (function() {
 		sendRequest: gbSendRequest,
     	version: version,
 		navigation: navigation,
+        storage: storage,
     	share: share,
     	getPhoto: getPhoto,
     	getVideo: getVideo,
     	getLocation: getLocation,
     	getTimezoneOffset: getTimezoneOffset,
+    	setPreference: setPreference,
+    	getPreference: getPreference,
+    	getUser: getUser,
     	log: log,
     	alert: _alert,
     	print: print
