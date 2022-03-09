@@ -208,6 +208,7 @@ var gb = (function() {
 		xhr.send ( null );
 	}
 
+	/* Deprecated */
 	function gbSendRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 	{
 		if (gbDevMode && gbToken == '')
@@ -583,13 +584,119 @@ var gb = (function() {
         keys: keys
 	};
 
+	/************* [GB Plugin API] HTTP Request Methods *************/
+
+	function gbHTTPRequest( url, method = "GET", params = {}, headers = {}, successCallback = "", errorCallback = "") 
+	{
+		if (gbDevMode && gbToken == '')
+		{
+			setTimeout(function() { gbHTTPRequest ( url, method, params, headers )});
+			return;
+		}
+
+		if (gbDevMode) {
+			resourceUrl+= (resourceUrl.match(/\?/g) ? '&' : '?') +'gbToken=' + gbToken;
+			// TODO:
+			return;
+		}
+
+		p = {
+			"url": url,
+			"method": method,
+			"headers": JSON.stringify(headers),
+			"params": JSON.stringify(params),
+			"successCallback": gbCallbackToString(successCallback),
+			"errorCallback": gbCallbackToString(errorCallback)
+		};
+		gbPostRequest ( "goodbarber://gbrequest", {}, p);
+		return;
+	}
+
+	/* Function : get
+	*  Starts a GET request to the url resource.
+	*  @param url The url of the resource to load
+	*  @param settings A set of key/value pairs that configure the request. All settings are optional.
+	*  		params : A set of key/value paris that be sent to the server.
+	*		headers : An object of additional header key/value pairs to send along with requests.
+	*		success : A function to be called if the request succeeds.
+	*		error : A function to be called if the request fails.
+	*/
+	function get ( url, settings )
+	{
+		var httpHeaders = settings['headers'];
+		var success = settings['success'];
+		var error = settings['error'];
+		return gbHTTPRequest ( url , 'GET', null, httpHeaders, success, error);
+	}
+
+	/* Function : post
+	*  Starts a POST request to the url resource.
+	*  @param url The url of the resource to load
+	*  @param settings A set of key/value pairs that configure the request. All settings are optional.
+	*  		params : A set of key/value paris that be sent to the server.
+	*		headers : An object of additional header key/value pairs to send along with requests.
+	*		success : A function to be called if the request succeeds.
+	*		error : A function to be called if the request fails.
+	*/
+	function post ( url, settings )
+	{
+		var params = settings['params'];
+		var httpHeaders = settings['headers'];
+		var success = settings['success'];
+		var error = settings['error'];
+		return gbHTTPRequest ( url , 'POST', params, httpHeaders, success, error);
+	}
+
+	/* Function : patch
+	*  Starts a PATCH request to the url resource.
+	*  @param url The url of the resource to load
+	*  @param settings A set of key/value pairs that configure the request. All settings are optional.
+	*  		params : A set of key/value paris that be sent to the server.
+	*		headers : An object of additional header key/value pairs to send along with requests.
+	*		success : A function to be called if the request succeeds.
+	*		error : A function to be called if the request fails.
+	*/
+	function patch ( url, settings )
+	{
+		var params = settings['params'];
+		var httpHeaders = settings['headers'];
+		var success = settings['success'];
+		var error = settings['error'];
+		return gbHTTPRequest ( url , 'PATCH', params, httpHeaders, success, error);
+	}
+
+	/* Function : put
+	*  Starts a PUT request to the url resource.
+	*  @param url The url of the resource to load
+	*  @param settings A set of key/value pairs that configure the request. All settings are optional.
+	*  		params : A set of key/value paris that be sent to the server.
+	*		headers : An object of additional header key/value pairs to send along with requests.
+	*		success : A function to be called if the request succeeds.
+	*		error : A function to be called if the request fails.
+	*/
+	function put ( url, settings )
+	{
+		var params = settings['params'];
+		var httpHeaders = settings['headers'];
+		var success = settings['success'];
+		var error = settings['error'];
+		return gbHTTPRequest ( url , 'PUT', params, httpHeaders, success, error);
+	}
+
+    var request = {
+		get: get,
+		post: post,
+		patch: patch,
+		put: put
+	};
+
     // public members, exposed with return statement
     return {
     	init: init,
-		sendRequest: gbSendRequest,
     	version: version,
 		navigation: navigation,
         storage: storage,
+		request: request,
     	share: share,
     	getPhoto: getPhoto,
     	getVideo: getVideo,
