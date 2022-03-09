@@ -583,10 +583,14 @@ var gb = (function() {
         keys: keys
 	};
 
+	var deprecated = {
+		sendRequest: gbSendRequest,
+	} 
+
     // public members, exposed with return statement
     return {
     	init: init,
-		sendRequest: gbSendRequest,
+		deprecated: deprecated,
     	version: version,
 		navigation: navigation,
         storage: storage,
@@ -621,7 +625,7 @@ var gb = (function() {
 */
 function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 {
-	return gb.sendRequest(resourceUrl, tag, cache, requestMethod, postParams);
+	return gb.deprecated.sendRequest(resourceUrl, tag, cache, requestMethod, postParams);
 }
 
 /************* [GB Plugin API] Other Methods *************/
@@ -695,7 +699,7 @@ function gbGetTimezoneOffset ()
 function gbSetPreference ( key, valueString, isGlobal="0" )
 {
 	var url = "goodbarber://setpreference?key="+key+"&value="+valueString+"&global="+isGlobal;
-	return gb.sendRequest(url, 0, false, "GET", {});
+	return gb.deprecated.sendRequest(url, 0, false, "GET", {});
 }
 
 /* Function : gbGetPreference
@@ -713,7 +717,7 @@ function gbGetPreference ( key, isGlobal="0" )
 
 	
 	var url = "goodbarber://getpreference?key="+key+"&global="+isGlobal;
-	return gb.sendRequest(url, 0, false, "GET", {});
+	return gb.deprecated.sendRequest(url, 0, false, "GET", {});
 }
 
 /* Function : gbGetUser
@@ -727,7 +731,7 @@ function gbGetUser ()
 	if ( gbDevMode )
 		gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
 	
-	return gb.sendRequest("goodbarber://getuser", 0, false, "GET", {});
+	return gb.deprecated.sendRequest("goodbarber://getuser", 0, false, "GET", {});
 }
 
 /* Function : gbLogs
