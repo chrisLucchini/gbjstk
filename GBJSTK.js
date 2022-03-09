@@ -550,7 +550,10 @@ var gb = (function() {
     /************* [GB Plugin API] Storage Methods *************/
 
 	function setItem(key, item) {
-		var s = JSON.stringify(item);
+		var s = item;
+		if ((!!item) && (item.constructor === Array) || (!!item) && (item.constructor === Object)) {
+			s = JSON.stringify(item);
+		}
 		gbPostRequest("goodbarber://gbsetstorageitem", { "key": key }, { "item": s });
 	}
 
