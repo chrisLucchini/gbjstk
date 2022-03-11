@@ -621,7 +621,7 @@ var gb = (function() {
 	*		success : A function to be called if the request succeeds.
 	*		error : A function to be called if the request fails.
 	*/
-	function get ( url, settings )
+	function get ( url, settings = {})
 	{
 		var httpHeaders = settings['headers'];
 		var success = settings['success'];
@@ -638,7 +638,7 @@ var gb = (function() {
 	*		success : A function to be called if the request succeeds.
 	*		error : A function to be called if the request fails.
 	*/
-	function post ( url, settings )
+	function post ( url, settings = {})
 	{
 		var params = settings['params'];
 		var httpHeaders = settings['headers'];
@@ -656,7 +656,7 @@ var gb = (function() {
 	*		success : A function to be called if the request succeeds.
 	*		error : A function to be called if the request fails.
 	*/
-	function patch ( url, settings )
+	function patch ( url, settings = {})
 	{
 		var params = settings['params'];
 		var httpHeaders = settings['headers'];
@@ -674,7 +674,7 @@ var gb = (function() {
 	*		success : A function to be called if the request succeeds.
 	*		error : A function to be called if the request fails.
 	*/
-	function put ( url, settings )
+	function put ( url, settings = {})
 	{
 		var params = settings['params'];
 		var httpHeaders = settings['headers'];
@@ -725,10 +725,17 @@ var gb = (function() {
 */
 /*
 *  	This function is deprecated
+*	You should now use both gb.get() & gb.post() functions
 */
 function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 {
-	return gb.sendRequest(resourceUrl, tag, cache, requestMethod, postParams);
+	if (requestMethod == "POST") {
+		return gb.post (url, {
+			params: postParams,
+		  });
+	} else {
+		return gb.get (url);
+	}
 }
 
 /************* [GB Plugin API] Other Methods *************/
@@ -802,7 +809,7 @@ function gbGetTimezoneOffset ()
 function gbSetPreference ( key, valueString, isGlobal="0" )
 {
 	var url = "goodbarber://setpreference?key="+key+"&value="+valueString+"&global="+isGlobal;
-	return gb.sendRequest(url, 0, false, "GET", {});
+	return gb.get(url);
 }
 
 /* Function : gbGetPreference
@@ -820,7 +827,7 @@ function gbGetPreference ( key, isGlobal="0" )
 
 	
 	var url = "goodbarber://getpreference?key="+key+"&global="+isGlobal;
-	return gb.sendRequest(url, 0, false, "GET", {});
+	return gb.get(url);
 }
 
 /* Function : gbGetUser
@@ -834,7 +841,7 @@ function gbGetUser ()
 	if ( gbDevMode )
 		gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
 	
-	return gb.sendRequest("goodbarber://getuser", 0, false, "GET", {});
+	return gb.get("goodbarber://getuser");
 }
 
 /* Function : gbLogs
