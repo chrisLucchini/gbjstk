@@ -48,8 +48,9 @@ var gb = (function() {
 
 	/************* Parent platform detection *************/
 
-
-	gbUserInfo = {};
+	if (gbUserInfo == null) {
+		gbUserInfo = {};
+	}
 
 	/* Var : BOOL gbAngularMode
 	*  Switches the URL updates and the form posts to messages to parent iframe - necessary for the plugins to work in the website version.
@@ -539,7 +540,7 @@ var gb = (function() {
 			gbGetRequest ( "goodbarber://maps", params );
 	}
 
-	var navigation = {
+	var location = {
 		href: href,
 		params: params,
 		open: open,
@@ -547,52 +548,27 @@ var gb = (function() {
 		maps: maps
 	};
 
-    /************* [GB Plugin API] Storage Methods *************/
-
-	function setItem(key, item) {
-		var s = item;
-		if ((!!item) && (item.constructor === Array) || (!!item) && (item.constructor === Object)) {
-			s = JSON.stringify(item);
+	Object.defineProperty(location, 'href', { //<- This object is called a "property descriptor".
+		//Alternatively, use: `get() {}`
+		get: function() {
+		  return href();
+		},
+		//Alternatively, use: `set(newValue) {}`
+		set: function(newValue) {
+			gbGetRequest ( newValue );
 		}
-		gbPostRequest("goodbarber://gbsetstorageitem", { "key": key }, { "item": s });
-	}
-
-	function getItem(key, callback) {
-		var s = gbCallbackToString(callback);
-		gbPostRequest("goodbarber://gbgetstorageitem", { "key": key }, { "callback": s });
-	}
-
-	function removeItem(key) {
-		gbPostRequest("goodbarber://gbremovestorageitem", { "key": key });
-	}
-
-	function clear() {
-		gbPostRequest("goodbarber://gbclearstorage", {});
-	}
-
-	function keys(callback) {
-		var s = gbCallbackToString(callback);
-		gbPostRequest("goodbarber://gbgetstoragekeys", {}, { "callback": s });
-	}
-
-    var storage = {
-		setItem: setItem,
-		getItem: getItem,
-		removeItem: removeItem,
-		clear: clear,
-        keys: keys
-	};
+	});
 
 	var deprecated = {
 		sendRequest: gbSendRequest,
 	} 
 
     // public members, exposed with return statement
-    return {
+    var result = {
     	init: init,
 		deprecated: deprecated,
     	version: version,
-		navigation: navigation,
+		location: location,
         storage: storage,
     	share: share,
     	getPhoto: getPhoto,
@@ -606,6 +582,19 @@ var gb = (function() {
     	alert: _alert,
     	print: print
     };
+
+	Object.defineProperty(result, 'location', { //<- This object is called a "property descriptor".
+		//Alternatively, use: `get() {}`
+		get: function() {
+		  return location;
+		},
+		//Alternatively, use: `set(newValue) {}`
+		set: function(newValue) {
+			gbGetRequest ( newValue );
+		}
+	});
+
+	return result;
 })();
 
 /************* GoodBarber Plugin API Functions *************/
