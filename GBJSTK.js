@@ -536,7 +536,7 @@ var gb = (function() {
 			gbGetRequest ( "goodbarber://maps", params );
 	}
 
-	var navigation = {
+	var location = {
 		href: href,
 		params: params,
 		open: open,
@@ -544,16 +544,27 @@ var gb = (function() {
 		maps: maps
 	};
 
+	Object.defineProperty(location, 'href', { //<- This object is called a "property descriptor".
+		//Alternatively, use: `get() {}`
+		get: function() {
+		  return href();
+		},
+		//Alternatively, use: `set(newValue) {}`
+		set: function(newValue) {
+			gbGetRequest ( newValue );
+		}
+	});
+
 	var deprecated = {
 		sendRequest: gbSendRequest,
 	} 
 
     // public members, exposed with return statement
-    return {
+    var result = {
     	init: init,
 		deprecated: deprecated,
     	version: version,
-		navigation: navigation,
+		location: location,
     	share: share,
     	getPhoto: getPhoto,
     	getVideo: getVideo,
@@ -563,6 +574,19 @@ var gb = (function() {
     	alert: _alert,
     	print: print
     };
+
+	Object.defineProperty(result, 'location', { //<- This object is called a "property descriptor".
+		//Alternatively, use: `get() {}`
+		get: function() {
+		  return location;
+		},
+		//Alternatively, use: `set(newValue) {}`
+		set: function(newValue) {
+			gbGetRequest ( newValue );
+		}
+	});
+
+	return result;
 })();
 
 /************* GoodBarber Plugin API Functions *************/
