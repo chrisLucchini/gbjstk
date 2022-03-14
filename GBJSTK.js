@@ -408,30 +408,6 @@ var gb = (function() {
 		gbGetRequest ( "goodbarber://gettimezoneoffset" );
 	}
 
-	/* Function : setPreference
-	*  Stores a preference in User Defaults.
-	*  @param key The key to store
-	*  @param valueString The value to store
-	*  @param isGlobal Used to share preference between all plugins of the app. Possible values : 0 or 1.
-	*/
-	function setPreference ( key, valueString, isGlobal="0" )
-	{
-		gbGetRequest ( "goodbarber://setpreference", { "key":key, "value":valueString, "global": isGlobal } );
-	}
-
-	/* Function : getPreference
-	*  Get a preference stored in User Defaults.
-	*  @param key The key to get
-	*  @param isGlobal Used to get a shared preference between all plugins of the app. Possible values : 0 or 1.
-	*/
-	function getPreference ( key, isGlobal="0" )
-	{
-		if ( gbDevMode )
-			gbDidSuccessGetPreference ( key, "" );
-
-		gbGetRequest ( "goodbarber://getpreference", { "key":key, "isGlobal": isGlobal } );
-	}
-
 	/* Function : getUser
 	*  Get the currently connected user. Will call the fail handler gbDidFailGetUser if no user is connected.
 	*/
@@ -578,8 +554,6 @@ var gb = (function() {
     	getVideo: getVideo,
     	getLocation: getLocation,
     	getTimezoneOffset: getTimezoneOffset,
-    	setPreference: setPreference,
-    	getPreference: getPreference,
     	getUser: getUser,
     	log: log,
     	alert: _alert,
@@ -677,36 +651,6 @@ function gbGetLocation ()
 function gbGetTimezoneOffset ()
 {
 	return gb.getTimezoneOffset();
-}
-
-/* Function : gbSetPreference
-*  Stores a preference in User Defaults.
-*  @param key The key to store
-*  @param valueString The value to store
-*  @param isGlobal Used to share preference between all plugins of the app. Possible values : 0 or 1.
-*/
-/*
-*  	This function is deprecated
-*/
-function gbSetPreference ( key, valueString, isGlobal="0" )
-{
-	var url = "goodbarber://setpreference?key="+key+"&value="+valueString+"&global="+isGlobal;
-
-	return gb.deprecated.pluginRequest(url);
-}
-
-/* Function : gbGetPreference
-*  Get a preference stored in User Defaults.
-*  @param key The key to get
-*  @param isGlobal Used to get a shared preference between all plugins of the app. Possible values : 0 or 1.
-*/
-/*
-*  	This function is deprecated
-*/
-function gbGetPreference ( key, isGlobal="0" )
-{
-	var url = "goodbarber://getpreference?key="+key+"&global="+isGlobal;
-	return gb.deprecated.pluginRequest(url);
 }
 
 /* Function : gbGetUser
