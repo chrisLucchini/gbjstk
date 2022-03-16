@@ -8,9 +8,48 @@
 class GBError {
     code = 0;
     message = "";
+
     constructor(code, message) {
         this.code = code;
         this.message = message;
+    }
+}
+
+class GBCoordinate {
+    latitude = 0;
+    longitude = 0;
+
+    constructor(latitude, longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+} 
+
+class GBUser {
+    id = "";
+    api_version = 0;
+    login = "";
+    email = null;
+    username = null;
+    picture_url = null;
+    description = null;
+    phone = null;
+    birthday = null;
+    location = null;
+    coordinates = null;
+    groups = null;
+    social_accounts = null;
+    custom_attribs = null;
+    access_levels = null;
+    billing_addresses = null;
+    shipping_addresses = null;
+    default_billing_address_id = null;
+    default_shipping_address_id = null;
+
+    constructor(id, api_version, login) {
+        this.id = id;
+        this.api_version = api_version;
+        this.login = login;
     }
 }
 
@@ -154,8 +193,7 @@ var gb = (function() {
 	*  @param path The action of the form
 	*  @param params The params to send in the request body 
 	*/
-	function gbPostRequest(path, getParams, postParams) 
-	{
+	function gbPostRequest(path, getParams, postParams) {
 		var formAction = path;
 		if (!gbIsEmpty(getParams))
 			formAction += "?" + gbConstructQueryString(getParams);
@@ -209,31 +247,29 @@ var gb = (function() {
 		xhr.send ( null );
 	}
 
-	function gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams )
+	/* Deprecated */
+	function gbSendRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 	{
 		if (gbDevMode && gbToken == '')
 		{
-			setTimeout(function() { gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
+			setTimeout(function() { gbSendRequest ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
 			return;
 		}
 
 		postParams = postParams || {};
 		requestMethod = requestMethod || "GET";
-		
-		if ( gbDevMode )
-		{
+
+		if ( gbDevMode ) {
 			resourceUrl+= (resourceUrl.match(/\?/g) ? '&' : '?') +'gbToken=' + gbToken;
 			gbXHRequest ( requestMethod, tag, resourceUrl, postParams );
-		}
-		else
-		{
-			if ( requestMethod == "GET" )
-			{
+			return;
+		} else {
+			if ( requestMethod == "GET" ) {
 				gbGetRequest ( "goodbarber://request", { "url":encodeURIComponent(resourceUrl), "tag":tag, "cache":cache, "method":requestMethod } );
-			}
-			else
-			{
+				return;
+			} else {
 				gbPostRequest ( "goodbarber://request", { "url":encodeURIComponent(resourceUrl), "tag":tag, "cache":cache, "method":requestMethod }, postParams );
+				return;
 			}
 		}
 	}
@@ -408,17 +444,6 @@ var gb = (function() {
 		gbGetRequest ( "goodbarber://gettimezoneoffset" );
 	}
 
-	/* Function : getUser
-	*  Get the currently connected user. Will call the fail handler gbDidFailGetUser if no user is connected.
-	*/
-	function getUser ()
-	{
-		if ( gbDevMode )
-			gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
-
-		gbGetRequest ( "goodbarber://getuser" );
-	}
-
 	/* Function : log
 	*  Console log a string. Usefull to log in native iOS with NSLogs
 	*/
@@ -522,7 +547,7 @@ var gb = (function() {
 			gbGetRequest ( "goodbarber://maps", params );
 	}
 
-	var location = {
+	var location = { 
 		href: href,
 		params: params,
 		open: open,
@@ -569,13 +594,14 @@ var gb = (function() {
 		gbPostRequest("goodbarber://gbgetstoragekeys", {}, { "callback": s });
 	}
 
-	var storage = {
+    var storage = {
 		setItem: setItem,
 		getItem: getItem,
 		removeItem: removeItem,
 		clear: clear,
-		keys: keys
+        keys: keys
 	};
+
 
 	/************* [GB Plugin API] HTTP Request Methods *************/
 
@@ -614,7 +640,7 @@ var gb = (function() {
 	*		success : A function to be called if the request succeeds.
 	*		error : A function to be called if the request fails.
 	*/
-	function get ( url, settings = {})
+	function get ( url, settings = {} )
 	{
 		var httpHeaders = settings['headers'];
 		var success = settings['success'];
@@ -631,7 +657,7 @@ var gb = (function() {
 	*		success : A function to be called if the request succeeds.
 	*		error : A function to be called if the request fails.
 	*/
-	function post ( url, settings = {})
+	function post ( url, settings = {} )
 	{
 		var params = settings['params'];
 		var httpHeaders = settings['headers'];
@@ -667,7 +693,7 @@ var gb = (function() {
 	*		success : A function to be called if the request succeeds.
 	*		error : A function to be called if the request fails.
 	*/
-	function put ( url, settings = {})
+	function put ( url, settings = {} )
 	{
 		var params = settings['params'];
 		var httpHeaders = settings['headers'];
@@ -683,26 +709,41 @@ var gb = (function() {
 		put: put
 	};
 
-	/************* [GB Plugin API] Deprecated Methods *************/
+    /************* [GB Plugin API] Users Methods *************/
 
-	var deprecated = {
-		pluginRequest: gbGetRequest,
-	} 
+	function getCurrentUser(successCallback, errorCallback) {
+        var success = gbCallbackToString(successCallback);
+        var error = gbCallbackToString(errorCallback);
+		gbPostRequest("goodbarber://gbgetcurrentuser", {}, { "success": successCallback, "error": errorCallback });
+	}
+
+	function openLogin() {
+		gbGetRequest("login");
+	}
+
+	function logoutUser() {
+		gbGetRequest("logout");
+	}
+
+    var user = {
+		getCurrent: getCurrentUser,
+		openLogin: openLogin,
+		logout: logoutUser
+	};
 
     // public members, exposed with return statement
     var result = {
     	init: init,
-		deprecated: deprecated,
     	version: version,
 		location: location,
         storage: storage,
 		request: request,
+        user: user,
     	share: share,
     	getPhoto: getPhoto,
     	getVideo: getVideo,
     	getLocation: getLocation,
     	getTimezoneOffset: getTimezoneOffset,
-    	getUser: getUser,
     	log: log,
     	alert: _alert,
     	print: print
@@ -806,17 +847,6 @@ function gbGetLocation ()
 function gbGetTimezoneOffset ()
 {
 	return gb.getTimezoneOffset();
-}
-
-/* Function : gbGetUser
-*  Get the currently connected user. Will call the fail handler gbDidFailGetUser if no user is connected.
-*/
-/*
-*  	This function is deprecated
-*/
-function gbGetUser ()
-{
-	return gb.deprecated.pluginRequest("goodbarber://getuser");
 }
 
 /* Function : gbLogs
