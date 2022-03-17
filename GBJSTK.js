@@ -714,21 +714,35 @@ var gb = (function() {
 	function getCurrentUser(successCallback, errorCallback) {
         var success = gbCallbackToString(successCallback);
         var error = gbCallbackToString(errorCallback);
-		gbPostRequest("goodbarber://gbgetcurrentuser", {}, { "success": successCallback, "error": errorCallback });
+		gbPostRequest("goodbarber://gbgetcurrentuser", {}, { "successCallback": success, "errorCallback": error });
 	}
 
 	function openLogin() {
-		gbGetRequest("login");
+		gbGetRequest("/login");
 	}
 
 	function logoutUser() {
-		gbGetRequest("logout");
+		gbGetRequest("/logout");
 	}
 
+	function onLogoutUser() {
+        gb.log('Override this method to receive callback when user logs out');
+    }
+
+    function onLoginUser() {
+        gb.log('Override this method to receive callback when user logs in');
+    }
+
+    function onUpdateUser() {
+        gb.log('Override this method to receive callback when there is an update on the user');
+    }
     var user = {
 		getCurrent: getCurrentUser,
 		openLogin: openLogin,
-		logout: logoutUser
+		logout: logoutUser,
+		onlogout: onLogoutUser,
+		onlogin: onLoginUser,
+		onupdate: onUpdateUser
 	};
 
     // public members, exposed with return statement
