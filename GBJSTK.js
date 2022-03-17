@@ -726,8 +726,8 @@ var gb = (function() {
 	}
 
 	function onLogoutUser() {
-        gb.log('Override this method to receive callback when user logs out');
-    }
+	    gb.log('Override this method to receive callback when user logs out');
+	}
 
     function onLoginUser() {
         gb.log('Override this method to receive callback when user logs in');
