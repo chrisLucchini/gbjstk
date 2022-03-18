@@ -299,6 +299,13 @@ var gb = (function() {
 		   })
 	   }
 
+	   /*  Function : gbWebsiteStoreGBGlobalData
+		* Callback function for functions to be triggered on load
+		*/
+		function gbOnLoad() {
+			gb.location.onload();
+		}
+
 		// if (event.origin != window.document.origin) {
 		// 	return;
 		// }
@@ -316,6 +323,8 @@ var gb = (function() {
 			gbWebsiteSetData(params[0], params[1]);
 		} else if (method == 'gbWebsiteStoreGBGlobalData') {
 			gbWebsiteStoreGBGlobalData(params[0], params[1]);
+		} else if (method == 'gbOnLoad') {
+			gbOnLoad();
 		} else if (gbAngularMode == true) {
 			// The method is a callback
 			gbWebsiteCallback(method, params);
@@ -522,12 +531,14 @@ var gb = (function() {
 			gbGetRequest ( "goodbarber://maps", params );
 	}
 
+	var onload;
 	var location = {
 		href: href,
 		params: params,
 		open: open,
 		mail: mail,
-		maps: maps
+		maps: maps,
+		onload: onload
 	};
 
 	Object.defineProperty(location, 'href', { //<- This object is called a "property descriptor".
