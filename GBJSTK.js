@@ -6,29 +6,29 @@
 */
 
 class GBError {
-	code = 0;
-	message = "";
-	constructor(code, message) {
-		this.code = code;
-		this.message = message;
-	}
+    code = 0;
+    message = "";
+    constructor(code, message) {
+        this.code = code;
+        this.message = message;
+    }
 }
 
 function gbCallbackToString(f) {
-	return btoa(f.toString());
+    return btoa(f.toString());
 }
 
 function gbCallback(hash, values) {
-	var decoded = atob(hash);
-	var fn = new Function('return ' + decoded)();
-	function caller(otherFunction) {
-		otherFunction.apply(null, values);
-	}
-	caller(fn);
+    var decoded = atob(hash);
+    var fn = new Function('return ' + decoded)(); 
+    function caller(otherFunction) {
+        otherFunction.apply(null, values);
+    }
+    caller(fn);
 }
 
-var gb = (function () {
-
+var gb = (function() {
+	
 	var version = "2.0.0";
 
 	/************* Debugging Zone *************/
@@ -39,17 +39,12 @@ var gb = (function () {
 	*  1 : Alerts before any request
 	*  2 : Alerts before any request + stop requests
 	*/
-	var gbDebuggingMode = 0,
+	var gbDebuggingMode = 0;
 
-		/* Var : string gbToken
-		*  Initialize the authentification token used in gbRequest();
-		*/
-		gbToken = gbParam('gbToken');
-
-	/* Var : onload
-	*  Variable to be assigned a funcion to be triggered on load.
+	/* Var : string gbToken
+	*  Initialize the authentification token used in gbRequest();
 	*/
-	var onload;
+	gbToken = gbParam('gbToken');
 
 	/* Var : onload
 	*  Variable to be assigned a funcion to be triggered on load.
@@ -82,7 +77,8 @@ var gb = (function () {
 	 * This function allow you to check if the current platform is iOS
 	 * @return true if the current plateform is iOS
 	 */
-	function gbPlatformIsIos() {
+	function gbPlatformIsIos()
+	{
 		return gbUserInfo && gbUserInfo.platform == 'ios';
 	}
 
@@ -90,16 +86,18 @@ var gb = (function () {
 	 * This function allow you to check if the current platform is Android
 	 * @return true if the current plateform is Android
 	 */
-	function gbPlatformIsAndroid() {
+	function gbPlatformIsAndroid()
+	{
 		return gbUserInfo && gbUserInfo.platform == 'android';
 	}
 
 	/** Function : init
 	 *  This function initializes communication with the parent PWA (if not already done)
 	 */
-	function init() {
+	function init() 
+	{
 		if (!gbAngularMode && window.parent) {
-			parent.postMessage({ url: "goodbarber://init" }, '*');
+			parent.postMessage({url: "goodbarber://init"}, '*');
 		}
 	}
 
@@ -108,10 +106,11 @@ var gb = (function () {
 	*  @param name The name of the argument
 	*  @return value
 	*/
-	function gbParam(name) {
-		var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
-		if (results) return results[1];
-		return '';
+	function gbParam(name) 
+	{
+	    var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+	    if (results) return results[1];
+	    return '';
 	}
 
 	/* Function : gbIsEmpty
@@ -119,14 +118,17 @@ var gb = (function () {
 	*  @param obj The action of the form
 	*  @return true if the object is empty, false otherwise 
 	*/
-	function gbIsEmpty(obj) {
-		var name;
-		for (name in obj) {
-			if (obj.hasOwnProperty(name)) {
-				return false;
-			}
-		}
-		return true;
+	function gbIsEmpty ( obj )
+	{
+	    var name;
+	    for ( name in obj )
+		{
+	        if ( obj.hasOwnProperty ( name ) )
+			{
+	            return false;
+	        }
+	    }
+	    return true;
 	}
 
 	/* Function : gbConstructQueryString
@@ -134,12 +136,15 @@ var gb = (function () {
 	*  @param params The params to construct the query string
 	*  @return The constructed query string
 	*/
-	function gbConstructQueryString(params) {
+	function gbConstructQueryString ( params )
+	{
 		var queryString = "";
 		var first = true;
-		for (var key in params) {
-			if (params.hasOwnProperty(key)) {
-				if (!first)
+		for ( var key in params )
+		{
+			if ( params.hasOwnProperty ( key ) )
+			{
+				if ( !first )
 					queryString += "&";
 				first = false;
 				queryString += key + "=" + params[key];
@@ -154,7 +159,8 @@ var gb = (function () {
 	*  @param path The action of the form
 	*  @param params The params to send in the request body 
 	*/
-	function gbPostRequest(path, getParams, postParams) {
+	function gbPostRequest(path, getParams, postParams) 
+	{
 		var formAction = path;
 		if (!gbIsEmpty(getParams))
 			formAction += "?" + gbConstructQueryString(getParams);
@@ -175,55 +181,64 @@ var gb = (function () {
 	*  @param path The destination path
 	*  @param params (optional) The params to send in the request body 
 	*/
-	function gbGetRequest(path, getParams) {
+	function gbGetRequest ( path, getParams )
+	{
 		getParams = getParams || {};
 		var destination = path;
-		if (!gbIsEmpty(getParams))
-			destination += "?" + gbConstructQueryString(getParams);
+		if ( !gbIsEmpty ( getParams ) )
+			destination += "?" + gbConstructQueryString ( getParams );
 
-		if (gbDebuggingMode >= 1)
-			alert(destination);
-
-		if (gbDebuggingMode < 2) {
+		if ( gbDebuggingMode >= 1 )
+			alert ( destination );
+		
+		if ( gbDebuggingMode < 2 ) {
 			if (gbAngularMode) {
-				window.parent.postMessage({ url: destination }, '*');
+				window.parent.postMessage({url: destination}, '*');
 			} else {
 				// Timeout 0 in case of consecutive calls to this method
-				window.setTimeout(function () { document.location.replace(destination); }, 0);
+				window.setTimeout(function (){ document.location.replace ( destination ); }, 0);
 			}
 		}
 	}
 
-	function gbXHRequest(requestMethod, tag, path, postParams) {
+	function gbXHRequest ( requestMethod, tag, path, postParams )
+	{
 		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function () {
-			if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0)) {
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 0))
+			{
 				gbRequestDidSuccess(tag, xhr.responseText, '');
 			}
 		};
-		xhr.open(requestMethod, path, true);
-		xhr.send(null);
+		xhr.open ( requestMethod, path, true );
+		xhr.send ( null );
 	}
 
-	function gbHTTPRequest(resourceUrl, tag, cache, requestMethod, postParams) {
-		if (gbDevMode && gbToken == '') {
-			setTimeout(function () { gbHTTPRequest(resourceUrl, tag, cache, requestMethod, postParams) }, 200);
+	function gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams )
+	{
+		if (gbDevMode && gbToken == '')
+		{
+			setTimeout(function() { gbHTTPRequest ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
 			return;
 		}
 
 		postParams = postParams || {};
 		requestMethod = requestMethod || "GET";
-
-		if (gbDevMode) {
-			resourceUrl += (resourceUrl.match(/\?/g) ? '&' : '?') + 'gbToken=' + gbToken;
-			gbXHRequest(requestMethod, tag, resourceUrl, postParams);
+		
+		if ( gbDevMode )
+		{
+			resourceUrl+= (resourceUrl.match(/\?/g) ? '&' : '?') +'gbToken=' + gbToken;
+			gbXHRequest ( requestMethod, tag, resourceUrl, postParams );
 		}
-		else {
-			if (requestMethod == "GET") {
-				gbGetRequest("goodbarber://request", { "url": encodeURIComponent(resourceUrl), "tag": tag, "cache": cache, "method": requestMethod });
+		else
+		{
+			if ( requestMethod == "GET" )
+			{
+				gbGetRequest ( "goodbarber://request", { "url":encodeURIComponent(resourceUrl), "tag":tag, "cache":cache, "method":requestMethod } );
 			}
-			else {
-				gbPostRequest("goodbarber://request", { "url": encodeURIComponent(resourceUrl), "tag": tag, "cache": cache, "method": requestMethod }, postParams);
+			else
+			{
+				gbPostRequest ( "goodbarber://request", { "url":encodeURIComponent(resourceUrl), "tag":tag, "cache":cache, "method":requestMethod }, postParams );
 			}
 		}
 	}
@@ -235,7 +250,7 @@ var gb = (function () {
 	 * The postMessage API is used to communicate between the Website and the plugin.
 	 * Messages contain data sent by the website containing a method and sometimes parameters.
 	 */
-	window.addEventListener("message", function (event) {
+	window.addEventListener("message", function(event) {
 
 		/* Function : gbWebsiteInitPlugin
 		 * Initialize the plugin for GB Website
@@ -246,12 +261,12 @@ var gb = (function () {
 
 			// Intercept clicks on links in order to call the corresponding method
 			var gbCustomLinks = document.getElementsByTagName("a");
-			for (var z = 0; z < gbCustomLinks.length; z++) {
+			for(var z = 0; z < gbCustomLinks.length; z++) {
 				var gbCustomLink = gbCustomLinks[z];
 				if (!gbCustomLink.protocol.startsWith('javascript')) {
-					gbCustomLink.onclick = function (e) {
+					gbCustomLink.onclick = function(e){
 						e.preventDefault();
-						parent.postMessage({ url: this.getAttribute("href") }, '*');
+						parent.postMessage({url: this.getAttribute("href")}, '*');
 						return false;
 					};
 				}
@@ -278,23 +293,23 @@ var gb = (function () {
 		}
 
 		/*  Function : gbWebsiteStoreGBGlobalData
+		 * Callback function for functions to be triggered on load
+		 */
+		function gbOnLoad() {
+			gb.location.onload();
+		}
+
+		/*  Function : gbWebsiteStoreGBGlobalData
 		* Set a variable with data
 		* @param where The name of the variable
 		* @param what The value of the variable
 		*/
-		function gbWebsiteStoreGBGlobalData(where, what) {
-			window['_GB'] = ({
-				...(window['_GB'] || {}),
-				[where]: what
-			})
-		}
-
-		/*  Function : gbWebsiteStoreGBGlobalData
-		 * Callback function for functions to be triggered on load
-		 */
-		function gbOnLoad() {
-			gb.onload();
-		}
+	   function gbWebsiteStoreGBGlobalData(where, what) {
+		   window['_GB'] = ({
+			   ...(window['_GB'] || {}),
+			   [where]: what
+		   })
+	   }
 
 		// if (event.origin != window.document.origin) {
 		// 	return;
@@ -331,90 +346,104 @@ var gb = (function () {
 	*  @param text The text to share
 	*  @param link The link to share
 	*/
-	function share(text, link) {
+	function share ( text, link )
+	{
 		text = text || "";
 		link = link || "";
-		gbGetRequest("goodbarber://share", { "text": encodeURIComponent(text), "link": encodeURIComponent(link) });
+		gbGetRequest ( "goodbarber://share", { "text":encodeURIComponent(text), "link":encodeURIComponent(link) } );
 	}
 
 	/* Function : getPhoto
 	*  Ask the user to take or choose a photo
 	*  @param mediaSource The source (camera or library) | values : [all(default)|camera|library]
 	*/
-	function getPhoto(mediaSource = "all") {
+	function getPhoto ( mediaSource = "all" )
+	{
 		mediaSource = mediaSource || "all";
-		gbGetRequest("goodbarber://getmedia", { "type": "photo", "source": mediaSource });
+		gbGetRequest ( "goodbarber://getmedia", { "type":"photo", "source":mediaSource } );
 	}
 
 	/* Function : getVideo
 	*  Ask the user to take or choose a video
 	*  @param mediaSource The source (camera or library) | values : [all(default)|camera|library]
 	*/
-	function getVideo(mediaSource = "all") {
+	function getVideo ( mediaSource = "all" )
+	{
 		mediaSource = mediaSource || "all";
-		gbGetRequest("goodbarber://getmedia", { "type": "video", "source": mediaSource });
+		gbGetRequest ( "goodbarber://getmedia", { "type":"video", "source":mediaSource } );
 	}
 
 	/* Function : getLocation
 	*  Asks for the user geolocation.
 	*/
-	function getLocation() {
-		function success(position) {
-			gbDidSuccessGetLocation(position.coords.latitude, position.coords.longitude);
+	function getLocation ()
+	{
+		function success(position)
+		{  
+			gbDidSuccessGetLocation ( position.coords.latitude,position.coords.longitude );
 		}
-		function fail(error) {
-			switch (error.code) {
+		function fail(error)
+		{
+			switch(error.code) 
+			{
 				case error.TIMEOUT:
-					gbDidFailGetLocation('Timeout');
+					gbDidFailGetLocation ('Timeout');
 					break;
 				case error.POSITION_UNAVAILABLE:
-					gbDidFailGetLocation('Position unavailable');
+					gbDidFailGetLocation ('Position unavailable');
 					break;
 				case error.PERMISSION_DENIED:
-					gbDidFailGetLocation('Permission denied');
+					gbDidFailGetLocation ('Permission denied');
 					break;
 				case error.UNKNOWN_ERROR:
-					gbDidFailGetLocation('Unknown error');
+					gbDidFailGetLocation ('Unknown error');
 					break;
 			}
 		}
 		var options = {
-			timeout: 15000
+		  timeout: 15000
 		};
 
-		if (gbDevMode) {
-			navigator.geolocation.getCurrentPosition(success, fail, options);
+		if ( gbDevMode )
+		{
+			navigator.geolocation.getCurrentPosition (success, fail, options);
 		}
-		else {
-			gbGetRequest("goodbarber://getlocation");
+		else
+		{
+			gbGetRequest ( "goodbarber://getlocation" );
 		}
 	}
 
 	/* Function : gbGetTimezoneOffset
 	* Asks for the time difference between UTC time and local time, in minutes.
 	*/
-	function getTimezoneOffset() {
-		gbGetRequest("goodbarber://gettimezoneoffset");
+	function getTimezoneOffset ()
+	{
+		gbGetRequest ( "goodbarber://gettimezoneoffset" );
 	}
 
 	/* Function : getUser
 	*  Get the currently connected user. Will call the fail handler gbDidFailGetUser if no user is connected.
 	*/
-	function getUser() {
-		if (gbDevMode)
-			gbDidSuccessGetUser({ id: 0, email: "user@example.com", attribs: { displayName: "Example User" } });
+	function getUser ()
+	{
+		if ( gbDevMode )
+			gbDidSuccessGetUser ( { id:0, email:"user@example.com", attribs:{ displayName:"Example User" } } );
 
-		gbGetRequest("goodbarber://getuser");
+		gbGetRequest ( "goodbarber://getuser" );
 	}
 
 	/* Function : log
 	*  Console log a string. Usefull to log in native iOS with NSLogs
 	*/
-	function log(log) {
-		if (gbPlatformIsIos()) {
+	function log( log )
+	{
+		if (gbPlatformIsIos()) 
+		{
 			gbAlert('Logs', log);
 		}
-		else {
+		else 
+		{
 			console.log(log);
 		}
 	}
@@ -422,11 +451,14 @@ var gb = (function () {
 	/* Function : alert
 	*  Display an alert
 	*/
-	function _alert(title, message) {
-		if (gbPlatformIsIos()) {
-			gbGetRequest("goodbarber://alert?title=" + encodeURIComponent(title) + '&message=' + encodeURIComponent(message));
+	function _alert( title, message )
+	{
+		if (gbPlatformIsIos()) 
+		{
+			gbGetRequest ( "goodbarber://alert?title=" + encodeURIComponent(title) + '&message=' + encodeURIComponent(message));
 		}
-		else {
+		else 
+		{
 			alert(title + '\n' + message);
 		}
 	}
@@ -434,12 +466,13 @@ var gb = (function () {
 	/* Function : print
 	*  Print the content of the page
 	*/
-	function print() {
+	function print()
+	{
 		if (!gbAngularMode) {
-			gbGetRequest("goodbarber://print");
-		} else {
-			window.print();
-		}
+	        gbGetRequest ( "goodbarber://print" );
+	    } else {
+	        window.print();
+	    }
 	}
 
 	/************* [GB Plugin API] Navigation Methods *************/
@@ -447,7 +480,8 @@ var gb = (function () {
 	/* Function: href
 	* Returns the url of the current plugin page
 	*/
-	function href() {
+	function href ()
+	{
 		if (typeof _GB == "undefined") {
 			return "";
 		}
@@ -457,7 +491,8 @@ var gb = (function () {
 	/* Function: arguments
 	* Returns the parameters passed throught the url of the page
 	*/
-	function params() {
+	function params ()
+	{
 		if (typeof gbUserInfo == "undefined") {
 			return {};
 		}
@@ -468,9 +503,10 @@ var gb = (function () {
 	*  Opens the url in a new window of the browser
 	*  @param url The url to open
 	*/
-	function open(url) {
+	function open ( url )
+	{
 		var params = { "url": encodeURIComponent(url) };
-		gbGetRequest("goodbarber://openExternal", params);
+		gbGetRequest ( "goodbarber://openExternal", params);
 	}
 
 	/* Function : mail
@@ -479,23 +515,25 @@ var gb = (function () {
 	*  @param subject (optional) The mail subject
 	*  @param body The (optional) mail content 
 	*/
-	function mail(to, subject, body) {
+	function mail ( to, subject, body )
+	{
 		to = to || "";
 		subject = subject || "";
 		body = body || "";
-		gbGetRequest("mailto:" + to, { "subject": encodeURIComponent(subject), "body": encodeURIComponent(body) });
+		gbGetRequest ( "mailto:" + to, { "subject":encodeURIComponent(subject), "body":encodeURIComponent(body) } );
 	}
 
 	/* Function : maps
 	*  Launches the Maps native application.
 	*  @param params The parameters to pass in the query string 
 	*/
-	function maps(params) {
+	function maps ( params )
+	{
 		params = params || {};
-		if (gbIsEmpty(params))
-			gbGetRequest("goodbarber://maps?q=");
+		if ( gbIsEmpty ( params ) )
+			gbGetRequest ( "goodbarber://maps?q=" );
 		else
-			gbGetRequest("goodbarber://maps", params);
+			gbGetRequest ( "goodbarber://maps", params );
 	}
 
 	var location = {
@@ -508,12 +546,12 @@ var gb = (function () {
 
 	Object.defineProperty(location, 'href', { //<- This object is called a "property descriptor".
 		//Alternatively, use: `get() {}`
-		get: function () {
-			return href();
+		get: function() {
+		  return href();
 		},
 		//Alternatively, use: `set(newValue) {}`
-		set: function (newValue) {
-			gbGetRequest(newValue);
+		set: function(newValue) {
+			gbGetRequest ( newValue );
 		}
 	});
 
@@ -558,34 +596,34 @@ var gb = (function () {
 	var deprecated = {
 		pluginRequest: gbGetRequest,
 		httpRequest: gbHTTPRequest
-	}
+	} 
 
-	// public members, exposed with return statement
-	var result = {
-		init: init,
+    // public members, exposed with return statement
+    var result = {
+    	init: init,
 		deprecated: deprecated,
-		version: version,
+    	version: version,
 		location: location,
-		storage: storage,
-		share: share,
-		getPhoto: getPhoto,
-		getVideo: getVideo,
-		getLocation: getLocation,
-		getTimezoneOffset: getTimezoneOffset,
-		getUser: getUser,
-		log: log,
-		alert: _alert,
-		print: print
-	};
+        storage: storage,
+    	share: share,
+    	getPhoto: getPhoto,
+    	getVideo: getVideo,
+    	getLocation: getLocation,
+    	getTimezoneOffset: getTimezoneOffset,
+    	getUser: getUser,
+    	log: log,
+    	alert: _alert,
+    	print: print
+    };
 
 	Object.defineProperty(result, 'location', { //<- This object is called a "property descriptor".
 		//Alternatively, use: `get() {}`
-		get: function () {
-			return location;
+		get: function() {
+		  return location;
 		},
 		//Alternatively, use: `set(newValue) {}`
-		set: function (newValue) {
-			gbGetRequest(newValue);
+		set: function(newValue) {
+			gbGetRequest ( newValue );
 		}
 	});
 
@@ -607,7 +645,8 @@ var gb = (function () {
 /*
 *  	This function is deprecated
 */
-function gbRequest(resourceUrl, tag, cache, requestMethod, postParams) {
+function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
+{
 	return gb.deprecated.httpRequest(resourceUrl, tag, cache, requestMethod, postParams);
 }
 
@@ -622,8 +661,9 @@ function gbRequest(resourceUrl, tag, cache, requestMethod, postParams) {
 *  	This function is deprecated
 *	You should now use the gb.share() function
 */
-function gbShare(shareText, shareLink) {
-	return gb.share(shareText, shareLink);
+function gbShare ( shareText, shareLink )
+{
+	return gb.share ( shareText, shareLink);
 }
 
 /* Function : gbGetMedia
@@ -635,7 +675,8 @@ function gbShare(shareText, shareLink) {
 *  	This function is deprecated
 *	You should now use both gb.get() & gb.post() functions
 */
-function gbGetMedia(mediaType, mediaSource) {
+function gbGetMedia ( mediaType, mediaSource )
+{
 	mediaType = mediaType || "photo";
 	if (mediaType == "photo") {
 		return gb.getPhoto(mediaSource);
@@ -651,7 +692,8 @@ function gbGetMedia(mediaType, mediaSource) {
 *  	This function is deprecated
 *	You should now use the gb.getLocation() function
 */
-function gbGetLocation() {
+function gbGetLocation ()
+{
 	return gb.getLocation();
 }
 
@@ -662,7 +704,8 @@ function gbGetLocation() {
 *  	This function is deprecated
 *	You should now use the gb.getTimezoneOffset() function
 */
-function gbGetTimezoneOffset() {
+function gbGetTimezoneOffset ()
+{
 	return gb.getTimezoneOffset();
 }
 
@@ -672,7 +715,8 @@ function gbGetTimezoneOffset() {
 /*
 *  	This function is deprecated
 */
-function gbGetUser() {
+function gbGetUser ()
+{
 	return gb.deprecated.pluginRequest("goodbarber://getuser");
 }
 
@@ -683,7 +727,8 @@ function gbGetUser() {
 *  	This function is deprecated
 *	You should now use the gb.log() function
 */
-function gbLogs(log) {
+function gbLogs( log )
+{
 	return gb.log(log);
 }
 
@@ -694,7 +739,8 @@ function gbLogs(log) {
 *  	This function is deprecated
 *	You should now use the gb.alert() function
 */
-function gbAlert(title, message) {
+function gbAlert( title, message )
+{
 	return gb.alert(title, message);
 }
 
@@ -705,7 +751,8 @@ function gbAlert(title, message) {
 *  	This function is deprecated
 *	You should now use the gb.print() function
 */
-function gbPrint() {
+function gbPrint()
+{
 	return gb.print();
 }
 
