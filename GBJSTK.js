@@ -46,6 +46,11 @@ var gb = (function() {
 	*/
 	gbToken = gbParam('gbToken');
 
+	/* Var : onload
+	*  Variable to be assigned a funcion to be triggered on load.
+	*/
+	var onload;
+
 	/************* Parent platform detection *************/
 
 	if (typeof gbUserInfo == "undefined") {
@@ -303,7 +308,7 @@ var gb = (function() {
 		* Callback function for functions to be triggered on load
 		*/
 		function gbOnLoad() {
-			gb.location.onload();
+			gb.onload();
 		}
 
 		// if (event.origin != window.document.origin) {
@@ -531,14 +536,12 @@ var gb = (function() {
 			gbGetRequest ( "goodbarber://maps", params );
 	}
 
-	var onload;
 	var location = {
 		href: href,
 		params: params,
 		open: open,
 		mail: mail,
-		maps: maps,
-		onload: onload
+		maps: maps
 	};
 
 	Object.defineProperty(location, 'href', { //<- This object is called a "property descriptor".
