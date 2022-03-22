@@ -725,23 +725,24 @@ var gb = (function() {
 		gbGetRequest("/logout");
 	}
 
+    function onLoginUser() {
+		gb.log('An user has been logged in. To handle this event you can use the gb.user.onlogin property.');
+    }
+
 	function onLogoutUser() {
-	    gb.log('Override this method to receive callback when user logs out');
+	    gb.log('An user has been logged out. To handle this event you can use the gb.user.onlogout property.');
 	}
 
-    function onLoginUser() {
-        gb.log('Override this method to receive callback when user logs in');
+    function onUpdateUser() {
+		gb.log('The logged in user has been updated. To handle this event you can use the gb.user.onupdate property.');
     }
 
-    function onUpdateUser() {
-        gb.log('Override this method to receive callback when there is an update on the user');
-    }
     var user = {
 		getCurrent: getCurrentUser,
 		openLogin: openLogin,
 		logout: logoutUser,
-		onlogout: onLogoutUser,
 		onlogin: onLoginUser,
+		onlogout: onLogoutUser,
 		onupdate: onUpdateUser
 	};
 
