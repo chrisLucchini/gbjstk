@@ -296,7 +296,9 @@ var gb = (function() {
 		 * Callback function for functions to be triggered on load
 		 */
 		function gbOnLoad() {
-			gb.location.onload();
+			if(gb.onload()){
+				gb.onload();
+			}
 		}
 
 		/*  Function : gbWebsiteStoreGBGlobalData
@@ -613,7 +615,8 @@ var gb = (function() {
     	getUser: getUser,
     	log: log,
     	alert: _alert,
-    	print: print
+    	print: print,
+		onload: onload
     };
 
 	Object.defineProperty(result, 'location', { //<- This object is called a "property descriptor".
