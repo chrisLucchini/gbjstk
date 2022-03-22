@@ -46,11 +46,6 @@ var gb = (function() {
 	*/
 	gbToken = gbParam('gbToken');
 
-	/* Var : onload
-	*  Variable to be assigned a funcion to be triggered on load.
-	*/
-	var onload;
-
 	/************* Parent platform detection *************/
 
 	if (typeof gbUserInfo == "undefined") {
@@ -295,7 +290,7 @@ var gb = (function() {
 		/*  Function : gbWebsiteStoreGBGlobalData
 		 * Callback function for functions to be triggered on load
 		 */
-		function gbOnLoad() {
+		function gbWebsiteOnLoad() {
 			if(typeof gb.onload == 'function'){
 				gb.onload();
 			}
@@ -330,8 +325,8 @@ var gb = (function() {
 			gbWebsiteSetData(params[0], params[1]);
 		} else if (method == 'gbWebsiteStoreGBGlobalData') {
 			gbWebsiteStoreGBGlobalData(params[0], params[1]);
-		} else if (method == 'gbOnLoad') {
-			gbOnLoad();
+		} else if (method == 'gbWebsiteOnLoad') {
+			gbWebsiteOnLoad();
 		} else if (gbAngularMode == true) {
 			// The method is a callback
 			gbWebsiteCallback(method, params);
@@ -340,6 +335,12 @@ var gb = (function() {
 	});
 
 	/************* GoodBarber Plugin API Functions *************/
+	
+	/************* [GB Plugin API] Events *************/
+
+    	function onLoad() {
+		gb.log('The plugin has been loaded. To handle this event you can use the gb.onload property.');
+    	}
 
 	/************* [GB Plugin API] Other Methods *************/
 
@@ -603,9 +604,10 @@ var gb = (function() {
     // public members, exposed with return statement
     var result = {
     	init: init,
-		deprecated: deprecated,
+	deprecated: deprecated,
+	onload: onload,
     	version: version,
-		location: location,
+	location: location,
         storage: storage,
     	share: share,
     	getPhoto: getPhoto,
@@ -615,8 +617,7 @@ var gb = (function() {
     	getUser: getUser,
     	log: log,
     	alert: _alert,
-    	print: print,
-		onload: onload
+    	print: print
     };
 
 	Object.defineProperty(result, 'location', { //<- This object is called a "property descriptor".
