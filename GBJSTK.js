@@ -296,7 +296,7 @@ var gb = (function() {
 		 * Callback function for functions to be triggered on load
 		 */
 		function gbOnLoad() {
-			if(gb.onload()){
+			if(typeof gb.onload == 'function'){
 				gb.onload();
 			}
 		}
