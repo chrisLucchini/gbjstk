@@ -517,6 +517,14 @@ var gb = (function() {
 		return _GB["params"];
 	}
 
+	/* Function : back
+	*  Go path to the previous page of the plugin
+	*/
+	function back () 
+	{
+		gbGetRequest("goodbarber://navigate.back");
+	}		
+
 	/* Function : open
 	*  Opens the url in a new window of the browser
 	*  @param url The url to open
@@ -548,6 +556,13 @@ var gb = (function() {
 	function maps ( params )
 	{
 		params = params || {};
+		if (gbDevMode || gbAngularMode) {
+			var baseUrl = 'https://maps.google.com/maps?'
+			var queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+			open(baseUrl + queryString);
+			return;
+		}
+
 		if ( gbIsEmpty ( params ) )
 			gbGetRequest ( "goodbarber://maps?q=" );
 		else
@@ -557,6 +572,7 @@ var gb = (function() {
 	var location = {
 		href: href,
 		params: params,
+		back: back,
 		open: open,
 		mail: mail,
 		maps: maps
