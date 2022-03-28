@@ -33,6 +33,8 @@ class GBUser {
     username = null;
     firstname = null;
     lastname = null;
+    first_name = null;
+    last_name = null;
     picture_url = null;
     description = null;
     phone = null;
@@ -52,6 +54,25 @@ class GBUser {
         this.id = id;
         this.api_version = api_version;
         this.login = login;
+    }
+}
+
+class GBUserAddress {
+    id = "";
+    first_name = null;
+    last_name = null;
+    middle_name = null;
+    city = null;
+    company = null;
+    country = null;
+    extra = null;
+    state = null;
+    vat_number = null;
+    zipcode = null;
+    localized_address = null;
+
+    constructor(id) {
+        this.id = id;
     }
 }
 
