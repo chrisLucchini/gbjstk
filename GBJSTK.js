@@ -66,6 +66,7 @@ class GBUserAddress {
     company = null;
     country = null;
     extra = null;
+    state = null;
     vat_number = null;
     zipcode = null;
     localized_address = null;
