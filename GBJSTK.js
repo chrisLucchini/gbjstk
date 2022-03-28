@@ -31,8 +31,6 @@ class GBUser {
     login = "";
     email = null;
     username = null;
-    firstname = null;
-    lastname = null;
     first_name = null;
     last_name = null;
     picture_url = null;
