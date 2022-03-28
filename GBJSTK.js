@@ -45,8 +45,7 @@ class GBUser {
     social_accounts = null;
     custom_attribs = null;
     access_levels = null;
-    billing_addresses = null;
-    shipping_addresses = null;
+    addresses = null;
     default_billing_address_id = null;
     default_shipping_address_id = null;
 
