@@ -101,7 +101,7 @@ var gb = (function() {
 	*  1 : Alerts before any request
 	*  2 : Alerts before any request + stop requests
 	*/
-	var gbDebuggingMode = 0,
+	var gbDebuggingMode = 0;
 
 	/* Var : string gbToken
 	*  Initialize the authentification token used in gbRequest();
@@ -270,12 +270,11 @@ var gb = (function() {
 		xhr.send ( null );
 	}
 
-	/* Deprecated */
-	function gbSendRequest ( resourceUrl, tag, cache, requestMethod, postParams )
+	function gbHTTPRequest_Deprecated ( resourceUrl, tag, cache, requestMethod, postParams )
 	{
 		if (gbDevMode && gbToken == '')
 		{
-			setTimeout(function() { gbSendRequest ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
+			setTimeout(function() { gbHTTPRequest_Deprecated ( resourceUrl, tag, cache, requestMethod, postParams ) }, 200);
 			return;
 		}
 
@@ -346,6 +345,24 @@ var gb = (function() {
 			}
 		}
 
+		/*  Function : gbWebsiteOnLoad
+		 * Callback function for functions to be triggered on load
+		 */
+		function gbWebsiteOnLoad() {
+			if(typeof gb.onload == 'function'){
+				gb.onload();
+			}
+		}
+
+		/*  Function : gbWebsiteOnAppear
+		 * Callback function for functions to be triggered on appear
+		 */
+		function gbWebsiteOnAppear() {
+			if(typeof gb.onappear == 'function'){
+				gb.onappear();
+			}
+		}
+
 		/*  Function : gbWebsiteStoreGBGlobalData
 		* Set a variable with data
 		* @param where The name of the variable
@@ -375,6 +392,10 @@ var gb = (function() {
 			gbWebsiteSetData(params[0], params[1]);
 		} else if (method == 'gbWebsiteStoreGBGlobalData') {
 			gbWebsiteStoreGBGlobalData(params[0], params[1]);
+		} else if (method == 'gbWebsiteOnLoad') {
+			gbWebsiteOnLoad();
+		} else if (method == 'gbWebsiteOnAppear') {
+			gbWebsiteOnAppear();
 		} else if (gbAngularMode == true) {
 			// The method is a callback
 			gbWebsiteCallback(method, params);
@@ -383,6 +404,16 @@ var gb = (function() {
 	});
 
 	/************* GoodBarber Plugin API Functions *************/
+	
+	/************* [GB Plugin API] Events *************/
+
+	function onLoad() {
+		gb.log('The plugin has been loaded. To handle this event you can use the gb.onload property.');
+	}
+
+	function onAppear() {
+		gb.log('The plugin appared on the screen. To handle this event you can use the gb.onappear property.');
+	}
 
 	/************* [GB Plugin API] Other Methods *************/
 
@@ -468,7 +499,7 @@ var gb = (function() {
 	}
 
 	/* Function : log
-	*  Console log a string. Usefull to log in native iOS with NSLogs
+	*  Console log a string. Useful to log in native iOS with NSLogs
 	*/
 	function log( log )
 	{
@@ -527,11 +558,19 @@ var gb = (function() {
 	*/
 	function params ()
 	{
-		if (typeof gbUserInfo == "undefined") {
+		if (typeof _GB == "undefined") {
 			return {};
 		}
 		return _GB["params"];
 	}
+
+	/* Function : back
+	*  Go path to the previous page of the plugin
+	*/
+	function back () 
+	{
+		gbGetRequest("goodbarber://navigate.back");
+	}		
 
 	/* Function : open
 	*  Opens the url in a new window of the browser
@@ -564,6 +603,13 @@ var gb = (function() {
 	function maps ( params )
 	{
 		params = params || {};
+		if (gbDevMode || gbAngularMode) {
+			var baseUrl = 'https://maps.google.com/maps?'
+			var queryString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
+			open(baseUrl + queryString);
+			return;
+		}
+
 		if ( gbIsEmpty ( params ) )
 			gbGetRequest ( "goodbarber://maps?q=" );
 		else
@@ -573,6 +619,7 @@ var gb = (function() {
 	var location = { 
 		href: href,
 		params: params,
+		back: back,
 		open: open,
 		mail: mail,
 		maps: maps
@@ -725,11 +772,30 @@ var gb = (function() {
 		return gbHTTPRequest ( url , 'PUT', params, httpHeaders, success, error);
 	}
 
+	/* Function : delete
+	*  Starts a DELETE request to the url resource.
+	*  @param url The url of the resource to load
+	*  @param settings A set of key/value pairs that configure the request. All settings are optional.
+	*  		params : A set of key/value paris that be sent to the server.
+	*		headers : An object of additional header key/value pairs to send along with requests.
+	*		success : A function to be called if the request succeeds.
+	*		error : A function to be called if the request fails.
+	*/
+	function _delete ( url, settings = {})
+	{
+		var params = settings['params'];
+		var httpHeaders = settings['headers'];
+		var success = settings['success'];
+		var error = settings['error'];
+		return gbHTTPRequest ( url , 'DELETE', params, httpHeaders, success, error);
+	}
+
     var request = {
 		get: get,
 		post: post,
 		patch: patch,
-		put: put
+		put: put,
+		delete: _delete
 	};
 
     /************* [GB Plugin API] Users Methods *************/
@@ -772,6 +838,12 @@ var gb = (function() {
     // public members, exposed with return statement
     var result = {
     	init: init,
+<<<<<<< HEAD
+=======
+		deprecated: deprecated,
+		onload: onLoad,
+		onappear: onAppear,
+>>>>>>> 1b5049840c3a050d784c0b755ad0e76745c11f22
     	version: version,
 		location: location,
         storage: storage,
@@ -888,7 +960,7 @@ function gbGetTimezoneOffset ()
 }
 
 /* Function : gbLogs
-*  Console log a string. Usefull to log in native iOS with NSLogs
+*  Console log a string. Useful to log in native iOS with NSLogs
 */
 /*
 *  	This function is deprecated
