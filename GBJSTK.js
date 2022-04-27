@@ -31,8 +31,6 @@ class GBUser {
     login = "";
     email = null;
     username = null;
-    firstname = null;
-    lastname = null;
     first_name = null;
     last_name = null;
     picture_url = null;
@@ -838,12 +836,9 @@ var gb = (function() {
     // public members, exposed with return statement
     var result = {
     	init: init,
-<<<<<<< HEAD
-=======
 		deprecated: deprecated,
 		onload: onLoad,
 		onappear: onAppear,
->>>>>>> 1b5049840c3a050d784c0b755ad0e76745c11f22
     	version: version,
 		location: location,
         storage: storage,
