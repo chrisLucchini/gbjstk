@@ -31,8 +31,6 @@ class GBUser {
     login = "";
     email = null;
     username = null;
-    firstname = null;
-    lastname = null;
     first_name = null;
     last_name = null;
     picture_url = null;
@@ -45,8 +43,7 @@ class GBUser {
     social_accounts = null;
     custom_attribs = null;
     access_levels = null;
-    billing_addresses = null;
-    shipping_addresses = null;
+    addresses = null;
     default_billing_address_id = null;
     default_shipping_address_id = null;
 
