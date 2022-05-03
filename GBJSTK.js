@@ -43,8 +43,7 @@ class GBUser {
     social_accounts = null;
     custom_attribs = null;
     access_levels = null;
-    billing_addresses = null;
-    shipping_addresses = null;
+    addresses = null;
     default_billing_address_id = null;
     default_shipping_address_id = null;
 
@@ -248,7 +247,10 @@ var gb = (function() {
 		if ( gbDebuggingMode < 2 ) {
 			if (gbAngularMode) {
 				window.parent.postMessage({url: destination}, '*');
-			} else {
+			} else if (gbPlatformIsIos()) {
+                            const message = JSON.stringify({ url: destination })
+			    window.webkit.messageHandlers.gbObserver.postMessage(message);
+                        } else {
 				// Timeout 0 in case of consecutive calls to this method
 				window.setTimeout(function (){ document.location.replace ( destination ); }, 0);
 			}
@@ -501,10 +503,9 @@ var gb = (function() {
 	*/
 	function log( log )
 	{
-		if (gbPlatformIsIos()) 
-		{
-			gbAlert('Logs', log);
-		}
+		if (gbPlatformIsIos()) {
+			gbPostRequest("goodbarber://log", {}, {"log":log})
+                }
 		else 
 		{
 			console.log(log);
