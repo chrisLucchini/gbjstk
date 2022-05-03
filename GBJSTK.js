@@ -833,6 +833,12 @@ var gb = (function() {
 		onupdate: onUpdateUser
 	};
 
+	/************* [GB Plugin API] Deprecated Methods *************/
+
+	var deprecated = {
+		pluginRequest: gbGetRequest,
+	} 
+
     // public members, exposed with return statement
     var result = {
     	init: init,
@@ -952,6 +958,17 @@ function gbGetLocation ()
 function gbGetTimezoneOffset ()
 {
 	return gb.getTimezoneOffset();
+}
+
+/* Function : gbGetUser
+*  Get the currently connected user. Will call the fail handler gbDidFailGetUser if no user is connected.
+*/
+/*
+*  	This function is deprecated
+*/
+function gbGetUser ()
+{
+	return gb.deprecated.pluginRequest("goodbarber://getuser");
 }
 
 /* Function : gbLogs
