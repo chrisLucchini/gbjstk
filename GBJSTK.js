@@ -354,6 +354,24 @@ var gb = (function() {
 			}
 		}
 
+		/* Function : gbWebsiteOnLogin
+		 * Callback function for functions to be triggered on login
+		 */
+		function gbWebsiteOnLogin() {
+			if (typeof gb.user.onlogin == 'function') {
+				gb.user.onlogin();
+			}
+		}
+
+		/* Function : gbWebsiteOnLogout
+		 * Callback function for functions to be triggered on logout
+		 */
+		function gbWebsiteOnLogout() {
+			if (typeof gb.user.onlogout == 'function') {
+				gb.user.onlogout();
+			}
+		}
+
 		/*  Function : gbWebsiteOnAppear
 		 * Callback function for functions to be triggered on appear
 		 */
@@ -399,6 +417,10 @@ var gb = (function() {
 		} else if (gbAngularMode == true) {
 			// The method is a callback
 			gbWebsiteCallback(method, params);
+		} else if (method == 'gbWebsiteOnLogin') {
+			gbWebsiteOnLogin();
+		} else if (method == 'gbWebsiteOnLogout') {
+			gbWebsiteOnLogout();
 		}
 
 	});
