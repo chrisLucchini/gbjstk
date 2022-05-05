@@ -414,13 +414,13 @@ var gb = (function() {
 			gbWebsiteOnLoad();
 		} else if (method == 'gbWebsiteOnAppear') {
 			gbWebsiteOnAppear();
-		} else if (gbAngularMode == true) {
-			// The method is a callback
-			gbWebsiteCallback(method, params);
 		} else if (method == 'gbWebsiteOnLogin') {
 			gbWebsiteOnLogin();
 		} else if (method == 'gbWebsiteOnLogout') {
 			gbWebsiteOnLogout();
+		} else if (gbAngularMode == true) {
+			// The method is a callback
+			gbWebsiteCallback(method, params);
 		}
 
 	});
