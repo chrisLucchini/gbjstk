@@ -894,11 +894,11 @@ var gb = (function() {
 function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 {
 	if (requestMethod == "POST") {
-		return gb.post (url, {
+		return gb.post (resourceUrl, {
 			params: postParams,
 		  });
 	} else {
-		return gb.get (url);
+		return gb.get (resourceUrl);
 	}
 }
 
