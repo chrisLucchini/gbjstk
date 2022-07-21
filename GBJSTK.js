@@ -155,6 +155,21 @@ var gb = (function() {
 		}
 	}
 
+	/** Function : platform
+	 * This function returns the current platform
+	 * @return 'ios' for the iOS native platform
+	 * @return 'android' for the Android native platform
+	 * @return 'web' for the PWA
+	 */
+	 function platform() {
+		if (gbPlatformIsIos()) {
+			return 'ios';
+		} else if (gbPlatformIsAndroid()) {
+			return 'android';
+		}
+		return 'web';
+	}
+
 	/* Function : gbParam
 	*  This function returns the value of an argument in location.href.
 	*  @param name The name of the argument
@@ -865,6 +880,7 @@ var gb = (function() {
     // public members, exposed with return statement
     var result = {
     	init: init,
+		platform: platform,
 		deprecated: deprecated,
 		onload: onLoad,
 		onappear: onAppear,
