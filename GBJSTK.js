@@ -675,15 +675,19 @@ var gb = (function() {
 	/************* [GB Plugin API] Storage Methods *************/
 
 	function setItem(key, item) {
-		var s = item;
-		if ((!!item) && (item.constructor === Array) || (!!item) && (item.constructor === Object)) {
-			s = JSON.stringify(item);
-		}
-		gbPostRequest("goodbarber://gbsetstorageitem", {}, { "item": s, "key": key });
+		var obj = {}
+		obj['value'] = item;
+		var json = JSON.stringify(obj);
+		gbPostRequest("goodbarber://gbsetstorageitem", {}, { "item": json, "key": key });
 	}
 
 	function getItem(key, callback) {
-		var s = gbCallbackToString(callback);
+		var cb = "function(value) {\
+			var obj = JSON.parse(value);\
+			var _f = " + callback + ";\
+			_f(obj['value']);\
+        }";
+		var s = gbCallbackToString(cb);
 		gbPostRequest("goodbarber://gbgetstorageitem", {}, { "callback": s, "key": key });
 	}
 
