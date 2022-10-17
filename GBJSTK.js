@@ -683,8 +683,16 @@ var gb = (function() {
 
 	function getItem(key, callback) {
 		var cb = "function(value) {\
-			var obj = JSON.parse(value);\
 			var _f = " + callback + ";\
+			if (!value) {\
+				_f();\
+				return;\
+			}\
+			var obj = JSON.parse(value);\
+			if (!obj) {\
+				_f();\
+				return;\
+			}\
 			_f(obj['value']);\
         }";
 		var s = gbCallbackToString(cb);
