@@ -328,17 +328,21 @@ var gb = (function() {
 			gbDevMode = false;
 
 			// Intercept clicks on links in order to call the corresponding method
-			var gbCustomLinks = document.getElementsByTagName("a");
-			for(var z = 0; z < gbCustomLinks.length; z++) {
-				var gbCustomLink = gbCustomLinks[z];
-				if (!gbCustomLink.protocol.startsWith('javascript')) {
-					gbCustomLink.onclick = function(e){
-						e.preventDefault();
-						parent.postMessage({url: this.getAttribute("href")}, '*');
-						return false;
-					};
+			window.addEventListener("click", function(evt) {
+				const target = evt.target.closest("a");
+				if (target) {
+					const href = target.getAttribute("href") || "";
+					const isAnchor = href.startsWith("#");
+					const isJS = target.protocol.startsWith("javascript");
+					if (!isAnchor && !isJS) {
+						target.onclick = function(e) {
+							e.preventDefault();
+							parent.postMessage({url: href}, "*");
+							return false;
+						}
+					}
 				}
-			}
+			});
 		}
 
 		/* Function : gbWebsiteSetData
