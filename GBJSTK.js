@@ -335,11 +335,9 @@ var gb = (function() {
 					const isAnchor = href.startsWith("#");
 					const isJS = target.protocol.startsWith("javascript");
 					if (!isAnchor && !isJS) {
-						target.onclick = function(e) {
-							e.preventDefault();
-							parent.postMessage({url: href}, "*");
-							return false;
-						}
+                        evt.preventDefault();
+					    parent.postMessage({url: href}, "*");
+					    return false;
 					}
 				}
 			});
