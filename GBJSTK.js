@@ -88,7 +88,7 @@ function gbCallback(hash, values) {
 
 var gb = (function() {
 	
-	var version = "2.0.0";
+	var version = "2.0.1";
 
 	/************* Debugging Zone *************/
 
