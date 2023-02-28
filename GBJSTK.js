@@ -87,7 +87,7 @@ function gbCallback(hash, values) {
 }
 
 var gb = (function(gbjs) {
-	
+
 	var version = "2.0.2";
 	/************* Debugging Zone *************/
 
@@ -160,7 +160,7 @@ var gb = (function(gbjs) {
 	 * @return 'android' for the Android native platform
 	 * @return 'web' for the PWA
 	 */
-	 function platform() {
+	function platform() {
 		if (gbPlatformIsIos()) {
 			return 'ios';
 		} else if (gbPlatformIsAndroid()) {
@@ -176,9 +176,9 @@ var gb = (function(gbjs) {
 	*/
 	function gbParam(name) 
 	{
-	    var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
-	    if (results) return results[1];
-	    return '';
+		var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+		if (results) return results[1];
+		return '';
 	}
 
 	/* Function : gbIsEmpty
@@ -188,15 +188,15 @@ var gb = (function(gbjs) {
 	*/
 	function gbIsEmpty ( obj )
 	{
-	    var name;
-	    for ( name in obj )
+		var name;
+		for ( name in obj )
 		{
-	        if ( obj.hasOwnProperty ( name ) )
+			if ( obj.hasOwnProperty ( name ) )
 			{
-	            return false;
-	        }
-	    }
-	    return true;
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/* Function : gbConstructQueryString
@@ -262,9 +262,9 @@ var gb = (function(gbjs) {
 			if (gbAngularMode) {
 				window.parent.postMessage({url: destination}, '*');
 			} else if (gbPlatformIsIos()) {
-                            const message = JSON.stringify({ url: destination })
-			    window.webkit.messageHandlers.gbObserver.postMessage(message);
-                        } else {
+				const message = JSON.stringify({ url: destination })
+				window.webkit.messageHandlers.gbObserver.postMessage(message);
+			} else {
 				// Timeout 0 in case of consecutive calls to this method
 				window.setTimeout(function (){ document.location.replace ( destination ); }, 0);
 			}
@@ -405,12 +405,12 @@ var gb = (function(gbjs) {
 		* @param where The name of the variable
 		* @param what The value of the variable
 		*/
-	   function gbWebsiteStoreGBGlobalData(where, what) {
-		   window['_GB'] = ({
-			   ...(window['_GB'] || {}),
-			   [where]: what
-		   })
-	   }
+		function gbWebsiteStoreGBGlobalData(where, what) {
+			window['_GB'] = ({
+				...(window['_GB'] || {}),
+				[where]: what
+			})
+		}
 
 		// if (event.origin != window.document.origin) {
 		// 	return;
@@ -518,7 +518,7 @@ var gb = (function(gbjs) {
 			}
 		}
 		var options = {
-		  timeout: 15000
+			timeout: 15000
 		};
 
 		if ( gbDevMode )
@@ -546,7 +546,7 @@ var gb = (function(gbjs) {
 	{
 		if (gbPlatformIsIos()) {
 			gbPostRequest("goodbarber://log", {}, {"log":log})
-                }
+		}
 		else 
 		{
 			console.log(log);
@@ -574,10 +574,10 @@ var gb = (function(gbjs) {
 	function print()
 	{
 		if (!gbAngularMode) {
-	        gbGetRequest ( "goodbarber://print" );
-	    } else {
-	        window.print();
-	    }
+			gbGetRequest ( "goodbarber://print" );
+		} else {
+			window.print();
+		}
 	}
 
 	/************* [GB Plugin API] Navigation Methods *************/
@@ -668,7 +668,7 @@ var gb = (function(gbjs) {
 	Object.defineProperty(location, 'href', { //<- This object is called a "property descriptor".
 		//Alternatively, use: `get() {}`
 		get: function() {
-		  return href();
+			return href();
 		},
 		//Alternatively, use: `set(newValue) {}`
 		set: function(newValue) {
@@ -871,7 +871,7 @@ var gb = (function(gbjs) {
     }
 
 	function onLogoutUser() {
-	    gbjs.log('An user has been logged out. To handle this event you can use the gb.user.onlogout property.');
+		gbjs.log('An user has been logged out. To handle this event you can use the gb.user.onlogout property.');
 	}
 
     function onUpdateUser() {
@@ -895,30 +895,30 @@ var gb = (function(gbjs) {
 
     // public members, exposed with return statement
     var result = {
-    	init: init,
+		init: init,
 		platform: platform,
 		deprecated: deprecated,
 		onload: gbjs && gbjs.onload || onLoad,
 		onappear: gbjs && gbjs.onappear || onAppear,
-    	version: version,
+		version: version,
 		location: location,
         storage: storage,
 		request: request,
         user: user,
-    	share: share,
-    	getPhoto: getPhoto,
-    	getVideo: getVideo,
-    	getLocation: getLocation,
-    	getTimezoneOffset: getTimezoneOffset,
-    	log: log,
-    	alert: _alert,
-    	print: print
+		share: share,
+		getPhoto: getPhoto,
+		getVideo: getVideo,
+		getLocation: getLocation,
+		getTimezoneOffset: getTimezoneOffset,
+		log: log,
+		alert: _alert,
+		print: print
     };
 
 	Object.defineProperty(result, 'location', { //<- This object is called a "property descriptor".
 		//Alternatively, use: `get() {}`
 		get: function() {
-		  return location;
+			return location;
 		},
 		//Alternatively, use: `set(newValue) {}`
 		set: function(newValue) {
@@ -927,8 +927,8 @@ var gb = (function(gbjs) {
 	});
 
     gbjs = result;
-
 	return result;
+
 })(gb);
 
 /************* GoodBarber Plugin API Functions *************/
@@ -952,7 +952,7 @@ function gbRequest ( resourceUrl, tag, cache, requestMethod, postParams )
 	if (requestMethod == "POST") {
 		return gb.post (resourceUrl, {
 			params: postParams,
-		  });
+		});
 	} else {
 		return gb.get (resourceUrl);
 	}
