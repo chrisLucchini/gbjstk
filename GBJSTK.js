@@ -329,20 +329,20 @@ var gb = (function(gbjs) {
 			// Test if context is iFrame
 			if (window.self !== window.top) {
 			// Intercept clicks on links in order to call the corresponding method
-			window.addEventListener("click", function(evt) {
-				const target = evt.target.closest("a");
-				if (target) {
-					const href = target.getAttribute("href") || "";
-					const isAnchor = href.startsWith("#");
-					const isJS = target.protocol.startsWith("javascript");
-					if (!isAnchor && !isJS) {
-						evt.preventDefault();
-						parent.postMessage({url: href}, "*");
-						return false;
+				window.addEventListener("click", function(evt) {
+					const target = evt.target.closest("a");
+					if (target) {
+						const href = target.getAttribute("href") || "";
+						const isAnchor = href.startsWith("#");
+						const isJS = target.protocol.startsWith("javascript");
+						if (!isAnchor && !isJS) {
+							evt.preventDefault();
+							parent.postMessage({url: href}, "*");
+							return false;
+						}
 					}
-				}
-			});
-		}
+				});
+			}
 		}
 
 		/* Function : gbWebsiteSetData
