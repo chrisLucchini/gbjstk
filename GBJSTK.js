@@ -86,10 +86,9 @@ function gbCallback(hash, values) {
     caller(fn);
 }
 
-var gb = (function() {
+var gb = (function(gbjs) {
 	
-	var version = "2.0.1";
-
+	var version = "2.0.2";
 	/************* Debugging Zone *************/
 
 	/* Var : int gbDebuggingMode
@@ -329,21 +328,21 @@ var gb = (function() {
 
 			// Test if context is iFrame
 			if (window.self !== window.top) {
-				// Intercept clicks on links in order to call the corresponding method
-				window.addEventListener("click", function(evt) {
-					const target = evt.target.closest("a");
-					if (target) {
-						const href = target.getAttribute("href") || "";
-						const isAnchor = href.startsWith("#");
-						const isJS = target.protocol.startsWith("javascript");
-						if (!isAnchor && !isJS) {
-							evt.preventDefault();
-							parent.postMessage({url: href}, "*");
-							return false;
-						}
+			// Intercept clicks on links in order to call the corresponding method
+			window.addEventListener("click", function(evt) {
+				const target = evt.target.closest("a");
+				if (target) {
+					const href = target.getAttribute("href") || "";
+					const isAnchor = href.startsWith("#");
+					const isJS = target.protocol.startsWith("javascript");
+					if (!isAnchor && !isJS) {
+						evt.preventDefault();
+						parent.postMessage({url: href}, "*");
+						return false;
 					}
-				});
-			}
+				}
+			});
+		}
 		}
 
 		/* Function : gbWebsiteSetData
@@ -369,8 +368,8 @@ var gb = (function() {
 		 * Callback function for functions to be triggered on load
 		 */
 		function gbWebsiteOnLoad() {
-			if(typeof gb.onload == 'function'){
-				gb.onload();
+			if(typeof gbjs.onload == 'function'){
+				gbjs.onload();
 			}
 		}
 
@@ -378,8 +377,8 @@ var gb = (function() {
 		 * Callback function for functions to be triggered on login
 		 */
 		function gbWebsiteOnLogin() {
-			if (typeof gb.user.onlogin == 'function') {
-				gb.user.onlogin();
+			if (typeof gbjs.user.onlogin == 'function') {
+				gbjs.user.onlogin();
 			}
 		}
 
@@ -387,8 +386,8 @@ var gb = (function() {
 		 * Callback function for functions to be triggered on logout
 		 */
 		function gbWebsiteOnLogout() {
-			if (typeof gb.user.onlogout == 'function') {
-				gb.user.onlogout();
+			if (typeof gbjs.user.onlogout == 'function') {
+				gbjs.user.onlogout();
 			}
 		}
 
@@ -396,8 +395,8 @@ var gb = (function() {
 		 * Callback function for functions to be triggered on appear
 		 */
 		function gbWebsiteOnAppear() {
-			if(typeof gb.onappear == 'function'){
-				gb.onappear();
+			if(typeof gbjs.onappear == 'function'){
+				gbjs.onappear();
 			}
 		}
 
@@ -450,11 +449,11 @@ var gb = (function() {
 	/************* [GB Plugin API] Events *************/
 
 	function onLoad() {
-		gb.log('The plugin has been loaded. To handle this event you can use the gb.onload property.');
+		gbjs.log('The plugin has been loaded. To handle this event you can use the gb.onload property.');
 	}
 
 	function onAppear() {
-		gb.log('The plugin appared on the screen. To handle this event you can use the gb.onappear property.');
+		gbjs.log('The plugin appared on the screen. To handle this event you can use the gb.onappear property.');
 	}
 
 	/************* [GB Plugin API] Other Methods *************/
@@ -868,24 +867,24 @@ var gb = (function() {
 	}
 
     function onLoginUser() {
-		gb.log('An user has been logged in. To handle this event you can use the gb.user.onlogin property.');
+		gbjs.log('An user has been logged in. To handle this event you can use the gb.user.onlogin property.');
     }
 
 	function onLogoutUser() {
-	    gb.log('An user has been logged out. To handle this event you can use the gb.user.onlogout property.');
+	    gbjs.log('An user has been logged out. To handle this event you can use the gb.user.onlogout property.');
 	}
 
     function onUpdateUser() {
-		gb.log('The logged in user has been updated. To handle this event you can use the gb.user.onupdate property.');
+		gbjs.log('The logged in user has been updated. To handle this event you can use the gb.user.onupdate property.');
     }
 
     var user = {
 		getCurrent: getCurrentUser,
 		openLogin: openLogin,
 		logout: logoutUser,
-		onlogin: onLoginUser,
-		onlogout: onLogoutUser,
-		onupdate: onUpdateUser
+		onlogin: gbjs && gbjs.user && gbjs.user.onlogin || onLoginUser,
+		onlogout: gbjs && gbjs.user && gbjs.user.onlogout || onLogoutUser,
+		onupdate: gbjs && gbjs.user && gbjs.user.onupdate || onUpdateUser
 	};
 
 	/************* [GB Plugin API] Deprecated Methods *************/
@@ -899,8 +898,8 @@ var gb = (function() {
     	init: init,
 		platform: platform,
 		deprecated: deprecated,
-		onload: onLoad,
-		onappear: onAppear,
+		onload: gbjs && gbjs.onload || onLoad,
+		onappear: gbjs && gbjs.onappear || onAppear,
     	version: version,
 		location: location,
         storage: storage,
@@ -927,8 +926,10 @@ var gb = (function() {
 		}
 	});
 
+    gbjs = result;
+
 	return result;
-})();
+})(gb);
 
 /************* GoodBarber Plugin API Functions *************/
 
